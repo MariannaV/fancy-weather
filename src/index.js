@@ -95,7 +95,6 @@ function createLocationBlock(locationData) {
 }
 
 
-
 const API_weather = {
   get apikey() {
     return '69608718e01c4ff1e36fa29958bb43b6';
@@ -117,7 +116,24 @@ const API_weather = {
   }
 
 };
+function createDate() {
+  const date = new Date();
 
+  const days = ['Воскресенье', 'Понедельник', 'Вторник',
+    'Среда', 'Четверг', 'Пятница', 'Суббота'];
+
+  const months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+    'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+
+  let timeNow = `${days[date.getDay()]}, ${date.getDate()} ${months[date.getMonth()]}, ${date.toLocaleTimeString('en-US', { hour12: false })}`;
+
+  const dateBlock = document.querySelector('.header-block .date');
+  dateBlock.innerHTML = '';
+  dateBlock.innerHTML = timeNow;
+
+}
+
+setInterval(createDate, 1000);
 
 const API_map = {
   get apikey() {
