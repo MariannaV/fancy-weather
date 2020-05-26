@@ -116,7 +116,7 @@ const API_weather = {
 
       for (let i = 0; i<4 && i < result.list.length; i+=1){
         const resultItem = result.list[i];
-        this.dataWeather.push({ degree : Math.round(resultItem.main.temp), feelsLike : Math.round(resultItem.main.feels_like), wind : resultItem.wind.speed, humidity: resultItem.main.humidity});
+        this.dataWeather.push({ weather: resultItem.weather[0].description,degree : Math.round(resultItem.main.temp), feelsLike : Math.round(resultItem.main.feels_like), wind : resultItem.wind.speed, humidity: resultItem.main.humidity});
       }
 
       console.log(3, result, this.dataWeather, 'list', result.list);
@@ -216,14 +216,14 @@ degreesHandler();
 function createWeatherTodayBlock(dataWeather) {
   console.log('DW',dataWeather);
   const dataWeatherToday = dataWeather[0];
-  const {degree, feelsLike, wind, humidity} = dataWeatherToday;
+  const {weather, degree, feelsLike, wind, humidity} = dataWeatherToday;
   const weatherTodayBlock = document.querySelector('.about-weather .weather-today-block');
   weatherTodayBlock.innerHTML = '';
   weatherTodayBlock.insertAdjacentHTML('beforeend',
     `
     <div class="degree-value">${degree}</div>
     <div class="additional-information">
-      <!--<p>overcast</p>-->
+      <p>${weather}</p>
       <p>feels like: ${feelsLike}°</p>
       <p>wind: ${wind} m/s</p>
       <p>humidity: ${humidity}%</p>
