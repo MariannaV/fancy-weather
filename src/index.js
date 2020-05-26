@@ -12,7 +12,7 @@ window.onload = async () => {
 };
 
 
-function googleMapInit() {
+function googleMapInit(coordinates) {
   const googleToken = 'AIzaSyAtMzLExZ-4fG_3BBaeIgPStExfwLxwerw';
   const language = 'ru';
   const googleMapScript = document.createElement('script');
@@ -25,21 +25,40 @@ function googleMapInit() {
   document.head.appendChild(googleMapScript);
 
   function googleMapInit() {
-    const map =new google.maps.Map(document.getElementById('map'), {
-      center: {lat: 56.3287, lng: 44.0020},
+    const { lat, lng } = coordinates;
+    const map = new google.maps.Map(document.getElementById('map'), {
+      center: {
+        lat,
+        lng
+      },
       zoom: 10
     });
 
-    const marker = new google.maps.Marker({position: {lat: 56.3287, lng: 44.0020}, map: map})
+    const marker = new google.maps.Marker({
+      position: {
+        lat,
+        lng
+      }, map: map
+    });
   };
 }
 
 
+function addCoordinates(coordinates){
+  const { lat, lng } = coordinates;
+  document.querySelector('.map-section .coordinates').insertAdjacentHTML(
+    'beforeend',
+    `<p>Latitude: ${lat.toFixed(2)}°</p>
+          <p>Longitude: ${lng.toFixed(2)}°</p>
+         `
+  );
+}
 
 export const API_geolocation = {
   get apikey() {
     return 'a4afdd31e79510';
   },
+  coordinates: {},
   currentLocation: {},
   async getLocation(params = {}) {
     try {
@@ -49,8 +68,11 @@ export const API_geolocation = {
       }
       const result = await response.json();
       this.currentLocation = result;
-      console.log(result, this.currentLocation);
-      createLocationBlock(this.currentLocation);
+      const locationCoordinatesArray = result.loc.split(',');
+      this.coordinates = {
+        lat: Number(locationCoordinatesArray[0]),
+        lng: Number(locationCoordinatesArray[1])
+      }
     } catch (error) {
       alert(`error : ${error}`);
     }
