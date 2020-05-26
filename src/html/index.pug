@@ -9,7 +9,7 @@ html(lang="ru")
         main.weather-content
             header.header
                 .control-block
-                    button.toggle-block >>
+                    button.toggle-block.toggle-background-image
                     select.toggle-block
                         option(value="en" selected) en
                         option(value="ru") ru
@@ -21,11 +21,11 @@ html(lang="ru")
                         button(type='button').vote-search x
                     button(type='submit').search-button Search
             section.about-weather
-                article.main-block.weather-block
+                article.main-block
                     .header-block
                         .title.location MINSK
                         .date 15 May
-                    .content-block
+                    .content-block.weather-today-block
                         .degree-value 10
                         .additional-information
                             p overcast
@@ -33,4 +33,6 @@ html(lang="ru")
                             p wind
                             p humidity
                 article.bottom-block
-            section#map
+            section.map-section
+                #map
+                .coordinates
