@@ -3,8 +3,8 @@ import 'regenerator-runtime/runtime';
 import './css/index.scss';
 
 
-
 window.onload = async () => {
+  backgroundImageToggleButtonHandler();
   await API_geolocation.getLocation();
   createLocationBlock(API_geolocation.currentLocation);
   await API_weather.getWeather(API_geolocation.currentLocation);
@@ -161,6 +161,41 @@ function calcFahrenheitDegrees(celsiusDegree) {
   console.log('far', fahrenheitDegrees);
   return fahrenheitDegrees;
 
+}
+
+
+const API_images = {
+  get apikey() {
+    return '_cXf5V9ZeOttjJE2clN9URiApDrCRiB8g2frf30AS-M'
+  },
+  receivedImage: '',
+  async getImageUrl() {
+
+    try {
+      const response = await fetch(`https://api.unsplash.com/photos/random?orientation=landscape&per_page=1&query=nature&client_id=${this.apikey}`);
+      if (!response.ok) {
+        throw Error('Something went wrong');
+      }
+      const result = await response.json();
+      this.receivedImage = result.urls.raw;
+      console.log('url', result, this.receivedImage);
+    } catch (error) {
+      alert(`error : ${error}`);
+    }
+  }
+};
+
+
+async function changeBackgroundImage() {
+  await API_images.getImageUrl();
+  const url = API_images.receivedImage;
+  document.body.setAttribute("style", `background-image: url(' ${url}');`);
+  console.log('url2', url);
+}
+
+function backgroundImageToggleButtonHandler() {
+  const  backgroundImageToggleButton = document.querySelector('.toggle-background-image');
+  backgroundImageToggleButton.addEventListener('click', changeBackgroundImage);
 }
 
 
