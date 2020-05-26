@@ -8,7 +8,11 @@ window.onload = async () => {
   await API_geolocation.getLocation();
   createLocationBlock(API_geolocation.currentLocation);
   await API_weather.getWeather(API_geolocation.currentLocation);
-  googleMapInit()
+  await createWeatherTodayBlock(API_weather.dataWeather);
+  googleMapInit(API_geolocation.coordinates);
+  addCoordinates(API_geolocation.coordinates);
+  // await API_images.getImageUrl();
+  changeBackgroundImage(API_images.receivedImage)
 };
 
 
@@ -99,7 +103,8 @@ const API_weather = {
   get apikey() {
     return '69608718e01c4ff1e36fa29958bb43b6';
   },
-  locationWeather: {},
+
+  dataWeather: [],
   async getWeather(params) {
     const { city, lang = 'eng' } = params;
     try {
@@ -108,8 +113,13 @@ const API_weather = {
         throw Error('Something went wrong');
       }
       const result = await response.json();
-      this.locationWeather = result;
-      console.log(3, result, this.locationWeather);
+
+      for (let i = 0; i<4 && i < result.list.length; i+=1){
+        const resultItem = result.list[i];
+        this.dataWeather.push({ degree : Math.round(resultItem.main.temp), feelsLike : Math.round(resultItem.main.feels_like), wind : resultItem.wind.speed, humidity: resultItem.main.humidity});
+      }
+
+      console.log(3, result, this.dataWeather, 'list', result.list);
     } catch (error) {
       alert(`error : ${error}`);
     }
@@ -167,3 +177,21 @@ function degreesHandler() {
 }
 
 degreesHandler();
+
+function createWeatherTodayBlock(dataWeather) {
+  console.log('DW',dataWeather);
+  const dataWeatherToday = dataWeather[0];
+  const {degree, feelsLike, wind, humidity} = dataWeatherToday;
+  const weatherTodayBlock = document.querySelector('.about-weather .weather-today-block');
+  weatherTodayBlock.innerHTML = '';
+  weatherTodayBlock.insertAdjacentHTML('beforeend',
+    `
+    <div class="degree-value">${degree}</div>
+    <div class="additional-information">
+      <!--<p>overcast</p>-->
+      <p>feels like: ${feelsLike}°</p>
+      <p>wind: ${wind} m/s</p>
+      <p>humidity: ${humidity}%</p>
+    </div>
+    `)
+}
