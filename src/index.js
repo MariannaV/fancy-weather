@@ -8,10 +8,10 @@ window.onload = async () => {
   await API_geolocation.getLocation();
   createLocationBlock(API_geolocation.currentLocation);
   await API_weather.getWeather(API_geolocation.currentLocation);
-  await createWeatherTodayBlock(API_weather.dataWeather);
+  await createWeatherTodayBlock(API_weather.dataWeatherToday);
+  createWeatherOfSomeDays(API_weather.dataWeatherOfSomeDays);
   googleMapInit(API_geolocation.coordinates);
   addCoordinates(API_geolocation.coordinates);
-  // await API_images.getImageUrl();
   changeBackgroundImage(API_images.receivedImage)
 };
 
@@ -105,6 +105,8 @@ const API_weather = {
   },
 
   dataWeather: [],
+  dataWeatherToday: {},
+  dataWeatherOfSomeDays: [],
   async getWeather(params) {
     const { city, lang = 'eng' } = params;
     try {
@@ -113,13 +115,14 @@ const API_weather = {
         throw Error('Something went wrong');
       }
       const result = await response.json();
-
-      for (let i = 0; i<4 && i < result.list.length; i+=1){
+      const amountOfForecastDays = 4;
+      for (let i = 0; i<amountOfForecastDays && i < result.list.length; i+=1){
         const resultItem = result.list[i];
         this.dataWeather.push({ weather: resultItem.weather[0].description,degree : Math.round(resultItem.main.temp), feelsLike : Math.round(resultItem.main.feels_like), wind : resultItem.wind.speed, humidity: resultItem.main.humidity});
       }
-
-      console.log(3, result, this.dataWeather, 'list', result.list);
+      this.dataWeatherToday = this.dataWeather[0];
+      this.dataWeatherOfSomeDays = this.dataWeather.splice(1);
+      console.log(3, result, this.dataWeather, 'list', result.list, 'weather TODAY', this.dataWeatherToday, 'weather of some days', this.dataWeatherOfSomeDays);
     } catch (error) {
       alert(`error : ${error}`);
     }
@@ -189,7 +192,7 @@ const API_images = {
 async function changeBackgroundImage() {
   await API_images.getImageUrl();
   const url = API_images.receivedImage;
-  document.body.setAttribute("style", `background-image: url(' ${url}');`);
+  document.body.setAttribute("style", `background-image:  linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5)), url(' ${url}');`);
   console.log('url2', url);
 }
 
@@ -213,9 +216,9 @@ function degreesHandler() {
 
 degreesHandler();
 
-function createWeatherTodayBlock(dataWeather) {
-  console.log('DW',dataWeather);
-  const dataWeatherToday = dataWeather[0];
+function createWeatherTodayBlock(dataWeatherToday) {
+  console.log('DW',dataWeatherToday);
+  // const dataWeatherToday = dataWeather[0];
   const {weather, degree, feelsLike, wind, humidity} = dataWeatherToday;
   const weatherTodayBlock = document.querySelector('.about-weather .weather-today-block');
   weatherTodayBlock.innerHTML = '';
@@ -229,4 +232,21 @@ function createWeatherTodayBlock(dataWeather) {
       <p>humidity: ${humidity}%</p>
     </div>
     `)
+}
+
+function createWeatherOfSomeDays(dataWeatherOfSomeDays){
+  const forecastBlock = document.querySelector('.about-weather .forecast-of-some-days');
+dataWeatherOfSomeDays.forEach(dataOfWeatherDay => {
+  forecastBlock.insertAdjacentHTML('beforeend',
+    `
+    <div class="weather-of-day">
+        <p>${dataOfWeatherDay.degree}°</p>
+        <p>${dataOfWeatherDay.weather}</p>
+    </div>
+    `
+    )
+
+})
+
+
 }

@@ -40,16 +40,6 @@
 
 
   /*----------HEADER----------*/
-  .header {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-  }
-
-
-  .content-block {
-    display: flex;
-  }
 
   /*---------- CONTROL BLOCK ----------*/
 
@@ -123,4 +113,28 @@
     width: 400px;
     height: 400px;
     border-radius: 5%;
+
+  }
+
+  /*----------MAIN BLOCK----------*/
+.about-weather{
+  width: 50%;
+}
+  .header {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+
+  .content-block {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .bottom-block{
+    display: flex;
+    justify-content: space-between;
   }
