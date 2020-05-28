@@ -5,20 +5,58 @@ import './css/index.scss';
 async function render(currentLocation) {
   createLocationBlock(currentLocation);
   await API_weather.getWeather(currentLocation);
-  createWeatherTodayBlock(API_weather.dataWeatherToday);
+  createWeatherTodayBlock(API_weather.dataWeatherToday); //если данные брать из стора: то не нужены параметры
   createWeatherOfSomeDays(API_weather.dataWeatherOfSomeDays);
   googleMapInit(currentLocation);
-  googleMapAPI.toggleLocation(currentLocation)
+  // googleMapAPI.toggleLocation(currentLocation);
   addCoordinates(currentLocation);
   // changeBackgroundImage(API_images.receivedImage)
+}
+
+function renderWithLanguage(language) {
+  // createWeatherTodayBlock()
+  // createWeatherOfSomeDays()
+  // googleMapAPI.toggleChange()
 }
 
 window.onload = async () => {
   listenSearchForm();
   backgroundImageToggleButtonHandler();
-  await API_geolocation.getLocation();
-  render(API_geolocation.currentLocation);
+  const { city } = await API_geolocation.getCurrentLocation();
+  store.currentLocation = await API_geolocation.getLocationByCity({ city });
+  // render(currentLocation);
 };
+
+const store = new Proxy({
+  currentLanguage: null,
+  currentTemperatureUnits: 'celsius', //'fahrenheit'
+  currentLocation: { city: null, country: null, lat: null, lng: null }
+}, {
+  set: function(target, name, value) {
+    target[name] = value;
+
+    switch (name) {
+      case 'currentLocation': {
+        render(value);
+        break;
+      }
+      case 'currentLanguage': {
+        console.log('need to change language');
+        render(value);
+        // renderWithLanguage(value);
+        break;
+      }
+
+      case 'currentTemperatureUnits': {
+        console.log('need to change temperature');
+        // renderWithTemperature(value)
+        break;
+      }
+    }
+
+    return true;
+  }
+});
 
 const googleMapAPI = {
   get map() {
@@ -28,14 +66,14 @@ const googleMapAPI = {
   toggleLocation(params) {
     // this.map.toggle(params)
   }
-}
+};
 
 //TODO: must to call only first time, then we need to toggle cords and marker in google.maps
 function googleMapInit({ coordinates }) {
 
   // if (!mapNonExist) {
   const googleToken = 'AIzaSyAtMzLExZ-4fG_3BBaeIgPStExfwLxwerw';
-  const language = 'ru';
+  const language = 'ru'; //store.currentLanguage
   const googleMapScript = document.createElement('script');
   //generate params
   googleMapScript.src = `https://maps.googleapis.com/maps/api/js?key=${googleToken}&callback=${googleMapInit.name}&language=${language}`;
@@ -44,6 +82,7 @@ function googleMapInit({ coordinates }) {
   globalThis[googleMapInit.name] = googleMapInit;
 
   document.head.appendChild(googleMapScript);
+
   // } else map.toggle(coords)
 
   function googleMapInit() {
@@ -67,9 +106,11 @@ function googleMapInit({ coordinates }) {
 }
 
 
-function addCoordinates({ coordinates } ) {
+function addCoordinates({ coordinates }) {
   const { lat, lng } = coordinates;
-  document.querySelector('.map-section .coordinates').insertAdjacentHTML(
+  const coordinatesBlock = document.querySelector('.map-section .coordinates');
+  coordinatesBlock.innerHTML = '';
+  coordinatesBlock.insertAdjacentHTML(
     'beforeend',
     `<p>Latitude: ${lat.toFixed(2)}°</p>
           <p>Longitude: ${lng.toFixed(2)}°</p>
@@ -81,8 +122,8 @@ export const API_geolocation = {
   get apikey() {
     return 'a4afdd31e79510';
   },
-  currentLocation: {},
-  async getLocation(params = {}) {
+  // currentLocation: {},
+  async getCurrentLocation() {
     try {
       const response = await fetch(`https://ipinfo.io/json?token=${this.apikey}`);
       if (!response.ok) {
@@ -91,7 +132,7 @@ export const API_geolocation = {
       const result = await response.json();
 
       const locationCoordinatesArray = result.loc.split(',');
-      this.currentLocation = {
+      return {
         ...result,
         coordinates: {
           lat: Number(locationCoordinatesArray[0]),
@@ -102,21 +143,34 @@ export const API_geolocation = {
       alert(`error : ${error}`);
     }
   },
-  async getLocationByCity({city}) {
+  async getLocationByCity({ city }) {
     const token = '3c0960e747d4430daf05b9de5716302a';
-    const response = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${city}&key=${token}`);
-    if (!response.ok) {
-      throw Error('Something went wrong');
-    }
-    const { results } = await response.json()
-    if (!results.length) {
-      throw Error('No match');
-    }
-    const bestMatch = results[0];
-    return {
-      city: bestMatch.components.city ?? city,
-      country: bestMatch.components.country,
-      coordinates: bestMatch.geometry
+    const language = 'en'; //store.currentLanguage
+    try {
+      const response = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${city}&key=${token}&language=${language}&pretty=1&no_annotations=1&limit=1&min_confidence=1&no_dedupe=1`);
+      // https://api.opencagedata.com/geocode/v1/json?q=moscw&key=dfcea8096a95496ba653f501109c66bf&pretty=1&no_annotations=1&language=ru
+      if (!response.ok) {
+        throw Error('Something went wrong');
+      }
+      const { results } = await response.json();
+      if (!results.length) {
+        throw Error('No match');
+      }
+
+      const bestMatch = results[0];
+      //building, road, village, neighbourhood, city, county, postcode, terminated_postcode, state_district, state, region, island, body_of_water, country, continent, ficticious, unknown
+      return {
+        city: bestMatch.components[bestMatch.components._type] ?? bestMatch.components.town,
+        country: bestMatch.components.country,
+        coordinates: bestMatch.geometry
+      };
+    } catch (error) {
+      if (error.message === 'bad query') {
+        console.log('ERROR');
+      }
+      // if (!results.length) {
+      //   throw Error('No match');
+      // }
     }
   }
 };
@@ -128,7 +182,7 @@ function createLocationBlock(locationData) {
   location.innerHTML = '';
   location.insertAdjacentHTML('beforeend',
     `
-    <p>${city}</p>
+    <p>${city},</p>
     <p>${country}</p>
     `
   );
@@ -139,8 +193,8 @@ const API_weather = {
   get apikey() {
     return '69608718e01c4ff1e36fa29958bb43b6';
   },
-  currentCity: null,
-  dataWeather: new Map(),
+  currentCity: null, //!!!
+  dataWeather: new Map(), //!!!
   get dataWeatherToday() {
     return this.dataWeather.get(this.currentCity)?.[0];
   },
@@ -148,12 +202,19 @@ const API_weather = {
     return this.dataWeather.get(this.currentCity)?.slice(1);
   },
   async getWeather(params) {
-    const { city, lang = 'eng' } = params;
+    const { city, lang = 'en', coordinates } = params;
     try {
-      this.currentCity = city;
+      this.currentCity = city; //store.c
       const amountOfForecastDays = 4;
       const hasAllDataAlready = this.dataWeather.get(city)?.length >= amountOfForecastDays;
       if (hasAllDataAlready) return;
+      const units = {
+        'celsius': 'metric',
+        'fahrenheit': 'imperial'
+      };
+      //TODO: use first API
+      fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${coordinates.lat}&lon=${coordinates.lng}&exclude=${'hourly,minutely'}&appid=${this.apikey}&units=${units.celsius}`);
+      //correct time, (new Date(result.current.dt).toLocaleString("en-US", {timeZone: result.timezone, weekday: 'long' })
 
       const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&lang=${lang}g&units=metric&APPID=${this.apikey}`);
       if (!response.ok) {
@@ -170,7 +231,9 @@ const API_weather = {
           degree: Math.round(resultItem.main.temp),
           feelsLike: Math.round(resultItem.main.feels_like),
           wind: resultItem.wind.speed,
-          humidity: resultItem.main.humidity
+          humidity: resultItem.main.humidity,
+          dayOfWeek: new Date(`${resultItem.dt_txt}`).getDay()
+          //middle: (max + min) / 2
         });
       }
     } catch (error) {
@@ -220,7 +283,6 @@ function calcFahrenheitDegrees(celsiusDegree) {
   fahrenheitDegrees = celsiusDegree * number + fahrenheitDegreesNull;
   console.log('far', fahrenheitDegrees);
   return fahrenheitDegrees;
-
 }
 
 
@@ -228,7 +290,7 @@ const API_images = {
   get apikey() {
     return '_cXf5V9ZeOttjJE2clN9URiApDrCRiB8g2frf30AS-M';
   },
-  receivedImage: '',
+  receivedImage: '', //!
   async getImageUrl() {
 
     try {
@@ -237,6 +299,7 @@ const API_images = {
         throw Error('Something went wrong');
       }
       const result = await response.json();
+      //store.receivedImage =
       this.receivedImage = result.urls.raw;
       console.log('url', result, this.receivedImage);
     } catch (error) {
@@ -276,7 +339,7 @@ degreesHandler();
 function createWeatherTodayBlock(dataWeatherToday) {
   console.log('DW', dataWeatherToday);
   // const dataWeatherToday = dataWeather[0];
-  const { weather, degree, feelsLike, wind, humidity } = dataWeatherToday;
+  const { weather, degree, feelsLike, wind, humidity } = dataWeatherToday;  //store.dataWeatherToday
   const weatherTodayBlock = document.querySelector('.about-weather .weather-today-block');
   weatherTodayBlock.innerHTML = '';
   weatherTodayBlock.insertAdjacentHTML('beforeend',
@@ -300,10 +363,10 @@ function createWeatherOfSomeDays(dataWeatherOfSomeDays) {
     <div class="weather-of-day">
         <p>${dataOfWeatherDay.degree}°</p>
         <p>${dataOfWeatherDay.weather}</p>
+        <p>${dataOfWeatherDay.dayOfWeek}</p>
     </div>
     `
     );
-
   });
 };
 
@@ -313,14 +376,6 @@ function listenSearchForm() {
   const searchInput = searchForm.querySelector('.search-input');
   searchForm.addEventListener('submit', async (button) => {
     button.preventDefault();
-    const city=searchInput.value.trim();
-    const newLocation = await API_geolocation.getLocationByCity({ city})
-    render(newLocation)
-    // await fetch(`http://geodb-free-service.wirefreethought.com/v1/geo/cities?namePrefix=${city}&limit=5&offset=0&hateoasMode=false`)
-    //get currentLocation by city?
-    //
-    // await API_weather.getWeather({ city: searchInput.value.trim() });
-    // createWeatherTodayBlock(API_weather.dataWeatherToday);
-    // createWeatherOfSomeDays(API_weather.dataWeatherOfSomeDays);
+    store.currentLocation = await API_geolocation.getLocationByCity({ city: searchInput.value.trim() });
   });
 };
