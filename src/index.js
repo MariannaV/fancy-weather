@@ -201,51 +201,67 @@ const API_weather = {
   get apikey() {
     return '69608718e01c4ff1e36fa29958bb43b6';
   },
-  currentCity: null, //!!!
-  dataWeather: new Map(), //!!!
-  get dataWeatherToday() {
-    return this.dataWeather.get(this.currentCity)?.[0];
-  },
-  get dataWeatherOfSomeDays() {
-    return this.dataWeather.get(this.currentCity)?.slice(1);
-  },
   async getWeather(params) {
-    const { city, lang = 'en', coordinates } = params;
+    const { currentLanguage, translate } = store;
+    const { city, coordinates } = params;
+
     try {
-      this.currentCity = city; //store.c
+      store.currentCity = city;
       const amountOfForecastDays = 4;
-      const hasAllDataAlready = this.dataWeather.get(city)?.length >= amountOfForecastDays;
+      const hasAllDataAlready = store.dataWeatherOfSomeDays.get(city)?.length >= amountOfForecastDays;
       if (hasAllDataAlready) return;
       const units = {
         'celsius': 'metric',
         'fahrenheit': 'imperial'
       };
       //TODO: use first API
-      fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${coordinates.lat}&lon=${coordinates.lng}&exclude=${'hourly,minutely'}&appid=${this.apikey}&units=${units.celsius}`);
       //correct time, (new Date(result.current.dt).toLocaleString("en-US", {timeZone: result.timezone, weekday: 'long' })
-
-      const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&lang=${lang}g&units=metric&APPID=${this.apikey}`);
-      if (!response.ok) {
+      const response = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${coordinates.lat}&lon=${coordinates.lng}&lang=${currentLanguage}&exclude=${'hourly,minutely'}&appid=${this.apikey}&units=${units.celsius}`);
+    if (!response.ok) {
         throw Error('Something went wrong');
       }
       const result = await response.json();
+       const resultforToday = result.current;
+      store.dataWeatherToday = {
+        degree: Math.round(resultforToday.temp),
+        feelsLike: Math.round(resultforToday.feels_like),
+        weather: resultforToday.weather[0].description,
+        humidity: resultforToday.humidity,
+        wind: resultforToday.wind_speed,
+        icon: resultforToday.weather[0].icon
+      };
+      store.currentTimeAndDay = {
+        get todayDate() {
+          const day = (new Date().toLocaleString('en-US', {
+            timeZone: result.timezone,
+            weekday: 'long'
+          })).toLocaleLowerCase();
+          return store.translate.daysOfWeek[day];
+           },
+        get timeNow() {
+          return new Date().toLocaleTimeString('en-US', {
+            timeZone: result.timezone,
+            hour12: false
+          });
+        }
+        // timeZone: result.timezone
+      };
+      if (!store.dataWeatherOfSomeDays.has(city)) store.dataWeatherOfSomeDays.set(city, []);
 
-      if (!this.dataWeather.has(city)) this.dataWeather.set(city, []);
-
-      for (let i = 0; i < amountOfForecastDays && i < result.list.length; i += 1) {
-        const resultItem = result.list[i];
-        this.dataWeather.get(city).push({
+      for (let i = 1; i < amountOfForecastDays && i < result.daily.length; i += 1) {
+        const resultItem = result.daily[i];
+        store.dataWeatherOfSomeDays.get(city).push({
           weather: resultItem.weather[0].description,
-          degree: Math.round(resultItem.main.temp),
-          feelsLike: Math.round(resultItem.main.feels_like),
-          wind: resultItem.wind.speed,
-          humidity: resultItem.main.humidity,
-          dayOfWeek: new Date(`${resultItem.dt_txt}`).getDay()
-          //middle: (max + min) / 2
+          degree: Math.round(((resultItem.temp.min + resultItem.temp.max) / 2)),
+          dayOfWeek: new Date(resultItem.dt * 1000).toLocaleString('en-US', {
+            timeZone: result.timezone,
+            weekday: 'long',
+          }),
+          icon: resultItem.weather[0].icon,
         });
       }
     } catch (error) {
-      if (error.message = 'city not found') {
+      if (error.message === 'city not found') {
         const searchInput = document.querySelector('#searchForm .search-input');
         searchInput.value = '';
         searchInput.setAttribute('placeholder', 'Type correct data');
@@ -258,23 +274,20 @@ const API_weather = {
 };
 
 function createDate() {
-  const date = new Date();
+  const { todayDate, timeNow } = store.currentTimeAndDay;
 
-  const days = ['Воскресенье', 'Понедельник', 'Вторник',
-    'Среда', 'Четверг', 'Пятница', 'Суббота'];
-
-  const months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
-    'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
-
-  let timeNow = `${days[date.getDay()]}, ${date.getDate()} ${months[date.getMonth()]}, ${date.toLocaleTimeString('en-US', { hour12: false })}`;
+  // let timeNow = `${days[date.getDay()]}, ${date.getDate()} ${months[date.getMonth()]}, ${date.toLocaleTimeString('en-US', { hour12: false })}`;
 
   const dateBlock = document.querySelector('.header-block .date');
   dateBlock.innerHTML = '';
-  dateBlock.innerHTML = timeNow;
+  dateBlock.insertAdjacentHTML('beforeend',
+    `
+    <p>${todayDate}</p>
+    <p>${timeNow}</p>
+    `
+  );
 
 }
-
-setInterval(createDate, 1000);
 
 const API_map = {
   get apikey() {
@@ -345,33 +358,38 @@ function degreesHandler() {
 degreesHandler();
 
 function createWeatherTodayBlock(dataWeatherToday) {
-  console.log('DW', dataWeatherToday);
-  // const dataWeatherToday = dataWeather[0];
-  const { weather, degree, feelsLike, wind, humidity } = dataWeatherToday;  //store.dataWeatherToday
+  clearInterval(createDate);
+  const { weather, degree, feelsLike, wind, humidity, icon } = dataWeatherToday;  //store.dataWeatherToday
+  console.log('xx',dataWeatherToday);
   const weatherTodayBlock = document.querySelector('.about-weather .weather-today-block');
   weatherTodayBlock.innerHTML = '';
   weatherTodayBlock.insertAdjacentHTML('beforeend',
     `
     <div class="degree-value">${degree}</div>
     <div class="additional-information">
+       <img src="http://openweathermap.org/img/wn/${icon}@2x.png"/>
       <p>${weather}</p>
       <p>feels like: ${feelsLike}°</p>
       <p>wind: ${wind} m/s</p>
       <p>humidity: ${humidity}%</p>
     </div>
     `);
+  setInterval(createDate, 1000);
 }
 
-function createWeatherOfSomeDays(dataWeatherOfSomeDays) {
+function createWeatherOfSomeDays() {
+  const { dataWeatherOfSomeDays,  translate } = store;
+  const dataOfWeatherForCity = dataWeatherOfSomeDays.get(store.currentLocation.city);
+  const { degree, weather, dayOfWeek, icon } = dataOfWeatherForCity;
   const forecastBlock = document.querySelector('.about-weather .forecast-of-some-days');
   forecastBlock.innerHTML = '';
-  dataWeatherOfSomeDays.forEach(dataOfWeatherDay => {
+  dataOfWeatherForCity.forEach(dataOfWeatherDay => {
     forecastBlock.insertAdjacentHTML('beforeend',
       `
     <div class="weather-of-day">
-        <p>${dataOfWeatherDay.degree}°</p>
-        <p>${dataOfWeatherDay.weather}</p>
         <p>${dataOfWeatherDay.dayOfWeek}</p>
+        <p>${dataOfWeatherDay.degree}°</p>
+        <img src="http://openweathermap.org/img/wn/${dataOfWeatherDay.icon}@2x.png"/>
     </div>
     `
     );
