@@ -80,20 +80,22 @@ const googleMapAPI = {
 
 //TODO: must to call only first time, then we need to toggle cords and marker in google.maps
 function googleMapInit({ coordinates }) {
-
-  // if (!mapNonExist) {
-  const googleToken = 'AIzaSyAtMzLExZ-4fG_3BBaeIgPStExfwLxwerw';
-  const language = 'ru'; //store.currentLanguage
-  const googleMapScript = document.createElement('script');
-  //generate params
-  googleMapScript.src = `https://maps.googleapis.com/maps/api/js?key=${googleToken}&callback=${googleMapInit.name}&language=${language}`;
-  googleMapScript.defer = true;
-
-  globalThis[googleMapInit.name] = googleMapInit;
-
-  document.head.appendChild(googleMapScript);
-
-  // } else map.toggle(coords)
+  const mapId = 'googleMapScript';
+  const isMapExist = document.getElementById(mapId);
+  if (!isMapExist) {
+    const googleToken = 'AIzaSyAtMzLExZ-4fG_3BBaeIgPStExfwLxwerw';
+    const language = store.currentLanguage;
+    const googleMapScript = document.createElement('script');
+    //TODO: need to generate params
+    googleMapScript.src = `https://maps.googleapis.com/maps/api/js?key=${googleToken}&callback=${googleMapInit.name}&language=${language}`;
+    googleMapScript.defer = true;
+    googleMapScript.id = mapId;
+    globalThis[googleMapInit.name] = googleMapInit;
+    document.head.appendChild(googleMapScript);
+  } else {
+    googleMapInit()
+    // map.toggle(coords)
+  }
 
   function googleMapInit() {
     const { lat, lng } = coordinates;
