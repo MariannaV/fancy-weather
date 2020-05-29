@@ -311,18 +311,14 @@ const API_images = {
   get apikey() {
     return '_cXf5V9ZeOttjJE2clN9URiApDrCRiB8g2frf30AS-M';
   },
-  receivedImage: '', //!
   async getImageUrl() {
-
     try {
       const response = await fetch(`https://api.unsplash.com/photos/random?orientation=landscape&per_page=1&query=nature&client_id=${this.apikey}`);
       if (!response.ok) {
         throw Error('Something went wrong');
       }
       const result = await response.json();
-      //store.receivedImage =
-      this.receivedImage = result.urls.raw;
-      console.log('url', result, this.receivedImage);
+      store.receivedImage = result.urls.regular.replace(/&w=\d+&/, `&w=${window.innerWidth}&`);
     } catch (error) {
       alert(`error : ${error}`);
     }
@@ -331,10 +327,10 @@ const API_images = {
 
 
 async function changeBackgroundImage() {
+  const element = document.body;
+  element.style.setProperty('--prevImg', getComputedStyle(element).getPropertyValue('--currentImg').replace(/\\/g, ''));
   await API_images.getImageUrl();
-  const url = API_images.receivedImage;
-  document.body.setAttribute('style', `background-image:  linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5)), url(' ${url}');`);
-  console.log('url2', url);
+  element.style.setProperty('--currentImg', `url(${store.receivedImage})`);
 }
 
 function backgroundImageToggleButtonHandler() {
