@@ -5,15 +5,16 @@ import './css/index.scss';
 async function render(currentLocation) {
   createLocationBlock(currentLocation);
   await API_weather.getWeather(currentLocation);
-  createWeatherTodayBlock(API_weather.dataWeatherToday); //если данные брать из стора: то не нужены параметры
-  createWeatherOfSomeDays(API_weather.dataWeatherOfSomeDays);
+  createWeatherTodayBlock(store.dataWeatherToday); //если данные брать из стора: то не нужены параметры
+  createWeatherOfSomeDays();
   googleMapInit(currentLocation);
   // googleMapAPI.toggleLocation(currentLocation);
-  addCoordinates(currentLocation);
+  addCoordinates();
   // changeBackgroundImage(API_images.receivedImage)
 }
 
-function renderWithLanguage(language) {
+function renderWithLanguage() {
+  addCoordinates();
   // createWeatherTodayBlock()
   // createWeatherOfSomeDays()
   // googleMapAPI.toggleChange()
@@ -28,9 +29,18 @@ window.onload = async () => {
 };
 
 const store = new Proxy({
-  currentLanguage: null,
+  currentLanguage: 'ru',
+  get translate() {
+    return translates[this.currentLanguage];
+  },
   currentTemperatureUnits: 'celsius', //'fahrenheit'
-  currentLocation: { city: null, country: null, lat: null, lng: null }
+  currentLocation: { city: null, country: null, lat: null, lng: null },
+  currentCity: null,
+  dataWeatherOfSomeDays: new Map(),
+  dataWeatherToday: {},
+  currentTimeAndDay: {},
+  receivedImage: ''
+
 }, {
   set: function(target, name, value) {
     target[name] = value;
@@ -42,8 +52,8 @@ const store = new Proxy({
       }
       case 'currentLanguage': {
         console.log('need to change language');
-        render(value);
-        // renderWithLanguage(value);
+        // render(value);
+        renderWithLanguage(value);
         break;
       }
 
@@ -112,8 +122,8 @@ function addCoordinates({ coordinates }) {
   coordinatesBlock.innerHTML = '';
   coordinatesBlock.insertAdjacentHTML(
     'beforeend',
-    `<p>Latitude: ${lat.toFixed(2)}°</p>
-          <p>Longitude: ${lng.toFixed(2)}°</p>
+    `<p>${store.translate.latitude}: ${lat.toFixed(2)}°</p>
+          <p>${store.translate.longitude}: ${lng.toFixed(2)}°</p>
          `
   );
 }
@@ -145,7 +155,7 @@ export const API_geolocation = {
   },
   async getLocationByCity({ city }) {
     const token = '3c0960e747d4430daf05b9de5716302a';
-    const language = 'en'; //store.currentLanguage
+    const language = store.currentLanguage;
     try {
       const response = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${city}&key=${token}&language=${language}&pretty=1&no_annotations=1&limit=1&min_confidence=1&no_dedupe=1`);
       // https://api.opencagedata.com/geocode/v1/json?q=moscw&key=dfcea8096a95496ba653f501109c66bf&pretty=1&no_annotations=1&language=ru
@@ -165,12 +175,8 @@ export const API_geolocation = {
         coordinates: bestMatch.geometry
       };
     } catch (error) {
-      if (error.message === 'bad query') {
-        console.log('ERROR');
-      }
-      // if (!results.length) {
-      //   throw Error('No match');
-      // }
+      alert(error.message === 'bad query' ? 'ERROR' : error);
+      throw new Error(error);
     }
   }
 };
