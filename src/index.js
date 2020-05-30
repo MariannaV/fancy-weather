@@ -1,6 +1,13 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import './css/index.scss';
+import { API_weather, API_geolocation, API_images } from './components/APIs';
+import {
+  createWeatherTodayBlock,
+  createWeatherOfSomeDays
+} from './components/weather-data';
+import { translates } from './components/translates';
+import { googleMapInit, addCoordinates } from './components/map';
 
 async function render() {
   createLocationBlock();
@@ -23,14 +30,22 @@ async function renderWithLanguage() {
   // googleMapAPI.toggleChange()
 }
 
+async function renderWithTemperature() {
+  await API_weather.getWeather({ city: store.currentLocation.city });
+  createWeatherTodayBlock();
+  createWeatherOfSomeDays();
+}
+
 window.onload = async () => {
   await createSearchForm();
   // changeBackgroundImage().then(changeBackgroundImage);
   listenSearchForm();
+  selectHandler();
   backgroundImageToggleButtonHandler();
   const { city } = await API_geolocation.getCurrentLocation();
   store.currentLocation = await API_geolocation.getLocationByCity({ city });
-  // render(currentLocation);
+  degreesToggleHandler();
+  // createErrorMessageBlock()
 };
 
 export const store = new Proxy({
@@ -40,7 +55,6 @@ export const store = new Proxy({
   },
   currentTemperatureUnits: 'celsius', //'fahrenheit'
   currentLocation: { city: null, country: null, lat: null, lng: null },
-  currentCity: null,
   dataWeatherOfSomeDays: new Map(),
   dataWeatherToday: {},
   currentTimeAndDay: {},
@@ -52,19 +66,16 @@ export const store = new Proxy({
 
     switch (name) {
       case 'currentLocation': {
-        render(value);
+        render();
         break;
       }
       case 'currentLanguage': {
-        console.log('need to change language');
-        // render(value);
-        renderWithLanguage(value);
+        renderWithLanguage();
         break;
       }
 
       case 'currentTemperatureUnits': {
-        console.log('need to change temperature');
-        // renderWithTemperature(value)
+        renderWithTemperature();
         break;
       }
     }
@@ -73,34 +84,15 @@ export const store = new Proxy({
   }
 });
 
-const googleMapAPI = {
-  get map() {
-    // if (nonExist) then init
-    //  return map
-  },
-  toggleLocation(params) {
-    // this.map.toggle(params)
-  }
-};
-
-//TODO: must to call only first time, then we need to toggle cords and marker in google.maps
-function googleMapInit({ coordinates }) {
-  const mapId = 'googleMapScript';
-  const isMapExist = document.getElementById(mapId);
-  if (!isMapExist) {
-    const googleToken = 'AIzaSyAtMzLExZ-4fG_3BBaeIgPStExfwLxwerw';
-    const language = store.currentLanguage;
-    const googleMapScript = document.createElement('script');
-    //TODO: need to generate params
-    googleMapScript.src = `https://maps.googleapis.com/maps/api/js?key=${googleToken}&callback=${googleMapInit.name}&language=${language}`;
-    googleMapScript.defer = true;
-    googleMapScript.id = mapId;
-    globalThis[googleMapInit.name] = googleMapInit;
-    document.head.appendChild(googleMapScript);
-  } else {
-    googleMapInit()
-    // map.toggle(coords)
-  }
+// const googleMapAPI = {
+// get map() {
+// if (nonExist) then init
+//  return map
+// },
+// toggleLocation(params) {
+// this.map.toggle(params)
+//   }
+// };
 
   function googleMapInit() {
     const { lat, lng } = coordinates;
@@ -113,14 +105,10 @@ function googleMapInit({ coordinates }) {
       zoom: 10
     });
 
-    const marker = new google.maps.Marker({
-      position: {
-        lat,
-        lng
-      }, map: map
-    });
-  };
-}
+const units = {
+  'celsius': 'metric',
+  'fahrenheit': 'imperial'
+};
 
 
 function createErrorMessageBlock({ errorField }) {
@@ -155,141 +143,11 @@ function createLocationBlock() {
   location.innerHTML = '';
   location.insertAdjacentHTML('beforeend',
     `
-    <p>${city},</p>
-    <p>${country}</p>
+    <p>${city.toUpperCase()}, </p>
+    <p>${country.toUpperCase()}</p>
     `
   );
 }
-
-
-const API_weather = {
-  get apikey() {
-    return '69608718e01c4ff1e36fa29958bb43b6';
-  },
-  async getWeather(params) {
-    const { currentLanguage, translate } = store;
-    const { city, coordinates } = params;
-
-    try {
-      store.currentCity = city;
-      const amountOfForecastDays = 4;
-      const hasAllDataAlready = store.dataWeatherOfSomeDays.get(city)?.length >= amountOfForecastDays;
-      if (hasAllDataAlready) return;
-      const units = {
-        'celsius': 'metric',
-        'fahrenheit': 'imperial'
-      };
-      //TODO: use first API
-      //correct time, (new Date(result.current.dt).toLocaleString("en-US", {timeZone: result.timezone, weekday: 'long' })
-      const response = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${coordinates.lat}&lon=${coordinates.lng}&lang=${currentLanguage}&exclude=${'hourly,minutely'}&appid=${this.apikey}&units=${units.celsius}`);
-    if (!response.ok) {
-        throw Error('Something went wrong');
-      }
-      const result = await response.json();
-       const resultforToday = result.current;
-      store.dataWeatherToday = {
-        degree: Math.round(resultforToday.temp),
-        feelsLike: Math.round(resultforToday.feels_like),
-        weather: resultforToday.weather[0].description,
-        humidity: resultforToday.humidity,
-        wind: resultforToday.wind_speed,
-        icon: resultforToday.weather[0].icon
-      };
-      store.currentTimeAndDay = {
-        get todayDate() {
-          const day = (new Date().toLocaleString('en-US', {
-            timeZone: result.timezone,
-            weekday: 'long'
-          })).toLocaleLowerCase();
-          return store.translate.daysOfWeek[day];
-           },
-        get timeNow() {
-          return new Date().toLocaleTimeString('en-US', {
-            timeZone: result.timezone,
-            hour12: false
-          });
-        }
-        // timeZone: result.timezone
-      };
-      if (!store.dataWeatherOfSomeDays.has(city)) store.dataWeatherOfSomeDays.set(city, []);
-
-      for (let i = 1; i < amountOfForecastDays && i < result.daily.length; i += 1) {
-        const resultItem = result.daily[i];
-        store.dataWeatherOfSomeDays.get(city).push({
-          weather: resultItem.weather[0].description,
-          degree: Math.round(((resultItem.temp.min + resultItem.temp.max) / 2)),
-          dayOfWeek: new Date(resultItem.dt * 1000).toLocaleString('en-US', {
-            timeZone: result.timezone,
-            weekday: 'long',
-          }),
-          icon: resultItem.weather[0].icon,
-        });
-      }
-    } catch (error) {
-      if (error.message === 'city not found') {
-        const searchInput = document.querySelector('#searchForm .search-input');
-        searchInput.value = '';
-        searchInput.setAttribute('placeholder', 'Type correct data');
-      } else {
-        alert(`error : ${error}`);
-      }
-    }
-  }
-
-};
-
-function createDate() {
-  const { todayDate, timeNow } = store.currentTimeAndDay;
-
-  // let timeNow = `${days[date.getDay()]}, ${date.getDate()} ${months[date.getMonth()]}, ${date.toLocaleTimeString('en-US', { hour12: false })}`;
-
-  const dateBlock = document.querySelector('.header-block .date');
-  dateBlock.innerHTML = '';
-  dateBlock.insertAdjacentHTML('beforeend',
-    `
-    <p>${todayDate}</p>
-    <p>${timeNow}</p>
-    `
-  );
-
-}
-
-const API_map = {
-  get apikey() {
-    return 'pk.eyJ1IjoibWFyaWFubmF2IiwiYSI6ImNrYWJnM2prMTE2M3Myem10Ym1nNWxveHAifQ.E7kEmcUZEKnrYE-ts0u7xw';
-  }
-};
-
-
-function calcFahrenheitDegrees(celsiusDegree) {
-  console.log('cels', celsiusDegree);
-  const fahrenheitDegreesNull = 32;
-  const number = 1.8;
-  let fahrenheitDegrees = 0;
-  fahrenheitDegrees = celsiusDegree * number + fahrenheitDegreesNull;
-  console.log('far', fahrenheitDegrees);
-  return fahrenheitDegrees;
-}
-
-
-const API_images = {
-  get apikey() {
-    return '_cXf5V9ZeOttjJE2clN9URiApDrCRiB8g2frf30AS-M';
-  },
-  async getImageUrl() {
-    try {
-      const response = await fetch(`https://api.unsplash.com/photos/random?orientation=landscape&per_page=1&query=nature&client_id=${this.apikey}`);
-      if (!response.ok) {
-        throw Error('Something went wrong');
-      }
-      const result = await response.json();
-      store.receivedImage = result.urls.regular.replace(/&w=\d+&/, `&w=${window.innerWidth}&`);
-    } catch (error) {
-      alert(`error : ${error}`);
-    }
-  }
-};
-
 
 async function changeBackgroundImage() {
   const element = document.body;
@@ -302,60 +160,6 @@ function backgroundImageToggleButtonHandler() {
   const backgroundImageToggleButton = document.querySelector('.toggle-background-image');
   backgroundImageToggleButton.addEventListener('click', changeBackgroundImage);
 }
-
-
-function changeDegreesValue() {
-  const tempetatureBlock = document.querySelector('.degree-value');
-  const temperatureValue = tempetatureBlock.innerText;
-  tempetatureBlock.innerHTML = '';
-  tempetatureBlock.innerText = `${calcFahrenheitDegrees(temperatureValue)}`;
-}
-
-function degreesHandler() {
-  const temperatureToggleBlock = document.querySelector('.control-block .toggle-temperature');
-  temperatureToggleBlock.addEventListener('click', changeDegreesValue);
-}
-
-degreesHandler();
-
-function createWeatherTodayBlock(dataWeatherToday) {
-  clearInterval(createDate);
-  const { weather, degree, feelsLike, wind, humidity, icon } = dataWeatherToday;  //store.dataWeatherToday
-  console.log('xx',dataWeatherToday);
-  const weatherTodayBlock = document.querySelector('.about-weather .weather-today-block');
-  weatherTodayBlock.innerHTML = '';
-  weatherTodayBlock.insertAdjacentHTML('beforeend',
-    `
-    <div class="degree-value">${degree}</div>
-    <div class="additional-information">
-       <img src="http://openweathermap.org/img/wn/${icon}@2x.png"/>
-      <p>${weather}</p>
-      <p>feels like: ${feelsLike}°</p>
-      <p>wind: ${wind} m/s</p>
-      <p>humidity: ${humidity}%</p>
-    </div>
-    `);
-  setInterval(createDate, 1000);
-}
-
-function createWeatherOfSomeDays() {
-  const { dataWeatherOfSomeDays,  translate } = store;
-  const dataOfWeatherForCity = dataWeatherOfSomeDays.get(store.currentLocation.city);
-  const { degree, weather, dayOfWeek, icon } = dataOfWeatherForCity;
-  const forecastBlock = document.querySelector('.about-weather .forecast-of-some-days');
-  forecastBlock.innerHTML = '';
-  dataOfWeatherForCity.forEach(dataOfWeatherDay => {
-    forecastBlock.insertAdjacentHTML('beforeend',
-      `
-    <div class="weather-of-day">
-        <p>${dataOfWeatherDay.dayOfWeek}</p>
-        <p>${dataOfWeatherDay.degree}°</p>
-        <img src="http://openweathermap.org/img/wn/${dataOfWeatherDay.icon}@2x.png"/>
-    </div>
-    `
-    );
-  });
-};
 
 
 function listenSearchForm() {
