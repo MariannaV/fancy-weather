@@ -126,7 +126,7 @@ export const API_geolocation = {
       }
       const { results } = await response.json();
       if (!results.length) {
-        throw Error('No match');
+        throw {errorField :'incorrectData' };
       }
 
       const bestMatch = results[0];
@@ -138,7 +138,7 @@ export const API_geolocation = {
       };
     } catch (error) {
       alert(error.message === 'bad query' ? 'ERROR' : error);
-      throw new Error(error);
+      throw error;
     }
   }
 };

@@ -2,25 +2,30 @@ import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import './css/index.scss';
 
-async function render(currentLocation) {
-  createLocationBlock(currentLocation);
-  await API_weather.getWeather(currentLocation);
-  createWeatherTodayBlock(store.dataWeatherToday); //если данные брать из стора: то не нужены параметры
+async function render() {
+  createLocationBlock();
+  await API_weather.getWeather();
+  createWeatherTodayBlock(); //если данные брать из стора: то не нужены параметры
   createWeatherOfSomeDays();
-  googleMapInit(currentLocation);
+  googleMapInit();
+  createSearchForm();
   // googleMapAPI.toggleLocation(currentLocation);
   addCoordinates();
   // changeBackgroundImage(API_images.receivedImage)
 }
 
-function renderWithLanguage() {
-  addCoordinates();
+async function renderWithLanguage() {
+  store.currentLocation = await API_geolocation.getLocationByCity({ city: store.currentLocation.city });
+  // addCoordinates();
+  // API_weather.getWeather()
   // createWeatherTodayBlock()
   // createWeatherOfSomeDays()
   // googleMapAPI.toggleChange()
 }
 
 window.onload = async () => {
+  await createSearchForm();
+  // changeBackgroundImage().then(changeBackgroundImage);
   listenSearchForm();
   backgroundImageToggleButtonHandler();
   const { city } = await API_geolocation.getCurrentLocation();
@@ -28,8 +33,8 @@ window.onload = async () => {
   // render(currentLocation);
 };
 
-const store = new Proxy({
-  currentLanguage: 'ru',
+export const store = new Proxy({
+  currentLanguage: 'en',
   get translate() {
     return translates[this.currentLanguage];
   },
@@ -118,74 +123,34 @@ function googleMapInit({ coordinates }) {
 }
 
 
-function addCoordinates({ coordinates }) {
-  const { lat, lng } = coordinates;
-  const coordinatesBlock = document.querySelector('.map-section .coordinates');
-  coordinatesBlock.innerHTML = '';
-  coordinatesBlock.insertAdjacentHTML(
-    'beforeend',
-    `<p>${store.translate.latitude}: ${lat.toFixed(2)}°</p>
-          <p>${store.translate.longitude}: ${lng.toFixed(2)}°</p>
-         `
-  );
-}
-
-export const API_geolocation = {
-  get apikey() {
-    return 'a4afdd31e79510';
-  },
-  // currentLocation: {},
-  async getCurrentLocation() {
-    try {
-      const response = await fetch(`https://ipinfo.io/json?token=${this.apikey}`);
-      if (!response.ok) {
-        throw Error('Something went wrong');
-      }
-      const result = await response.json();
-
-      const locationCoordinatesArray = result.loc.split(',');
-      return {
-        ...result,
-        coordinates: {
-          lat: Number(locationCoordinatesArray[0]),
-          lng: Number(locationCoordinatesArray[1])
-        }
-      };
-    } catch (error) {
-      alert(`error : ${error}`);
-    }
-  },
-  async getLocationByCity({ city }) {
-    const token = '3c0960e747d4430daf05b9de5716302a';
-    const language = store.currentLanguage;
-    try {
-      const response = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${city}&key=${token}&language=${language}&pretty=1&no_annotations=1&limit=1&min_confidence=1&no_dedupe=1`);
-      // https://api.opencagedata.com/geocode/v1/json?q=moscw&key=dfcea8096a95496ba653f501109c66bf&pretty=1&no_annotations=1&language=ru
-      if (!response.ok) {
-        throw Error('Something went wrong');
-      }
-      const { results } = await response.json();
-      if (!results.length) {
-        throw Error('No match');
-      }
-
-      const bestMatch = results[0];
-      //building, road, village, neighbourhood, city, county, postcode, terminated_postcode, state_district, state, region, island, body_of_water, country, continent, ficticious, unknown
-      return {
-        city: bestMatch.components[bestMatch.components._type] ?? bestMatch.components.town,
-        country: bestMatch.components.country,
-        coordinates: bestMatch.geometry
-      };
-    } catch (error) {
-      alert(error.message === 'bad query' ? 'ERROR' : error);
-      throw new Error(error);
-    }
+function createErrorMessageBlock({ errorField }) {
+  const { translate } = store;
+  const searchForm = document.getElementById('searchForm');
+  const errorBlock = searchForm.querySelector('.search-error-block');
+  if (!errorBlock) {
+    searchForm.insertAdjacentHTML('beforeend',
+      `
+      <div class="search-error-block"></div>
+      `
+    );
   }
+  if (errorField) errorBlock.dataset.testId = errorField;
+  console.log(errorBlock, errorField);
+  errorBlock.innerHTML = '';
+  errorBlock.insertAdjacentHTML('beforeend',
+    `<p>${translate.searchFormData.errors[errorField]}</p>`
+  );
 };
 
-function createLocationBlock(locationData) {
-  const { city, country } = locationData;
-  // console.log(2, API_geolocation.currentLocation);
+function removeErrorMessageBlock() {
+  const searchForm = document.getElementById('searchForm');
+  const errorBlock = searchForm.querySelector('.search-error-block');
+  errorBlock.remove();
+}
+
+
+function createLocationBlock() {
+  const { city, country } = store.currentLocation;
   const location = document.querySelector('.header-block .location');
   location.innerHTML = '';
   location.insertAdjacentHTML('beforeend',
@@ -395,9 +360,64 @@ function createWeatherOfSomeDays() {
 
 function listenSearchForm() {
   const searchForm = document.getElementById('searchForm');
-  const searchInput = searchForm.querySelector('.search-input');
-  searchForm.addEventListener('submit', async (button) => {
-    button.preventDefault();
-    store.currentLocation = await API_geolocation.getLocationByCity({ city: searchInput.value.trim() });
+  searchForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    try {
+      const searchInput = event.target.elements.place;
+      store.currentLocation = await API_geolocation.getLocationByCity({ city: searchInput.value.trim() });
+      removeErrorMessageBlock()
+    } catch (error) {
+      createErrorMessageBlock(error);
+    }
   });
 };
+
+
+function selectHandler() {
+  const select = document.querySelector('select.toggle-block');
+  select.addEventListener('change', event => {
+    store.currentLanguage = event.target.value;
+  });
+}
+
+
+function createSearchForm() {
+  const { translate } = store;
+  const searchForm = document.getElementById('searchForm');
+  const errorBlock = searchForm.querySelector('.search-error-block');
+  const errorId = errorBlock?.dataset?.testId;
+  searchForm.innerHTML = '';
+  searchForm.insertAdjacentHTML('beforeend',
+    `
+  <div class="search-wrapper">
+    <input class="search-input" name="place" placeholder="${translate.searchFormData.searchInputPlaceholder}" autocomplete="off" autofocus="">
+  </div>
+  <button class="search-button" type="submit">${translate.searchFormData.buttonText}</button>
+  <div class="search-error-block" ${errorId ? `data-test-id=${errorId}`: ''}>${errorId ? translate.searchFormData.errors[errorId] : ''}</div>
+  `
+  );
+}
+
+function degreesToggleHandler() {
+  const toggleTemperatureBlock = document.querySelector('.toggle-temperature');
+  toggleTemperatureBlock.addEventListener('click', event => {
+    store.currentTemperatureUnits = event.target.dataset.degree;
+    // toggleTemperatureBlock.classList.contains('celsius')
+    toggleTemperatureBlock.classList.remove('celsius', 'fahrenheit');
+    toggleTemperatureBlock.classList.add(event.target.dataset.degree);
+    console.log(event.target, event.currentTarget, store.currentTemperatureUnits);
+  });
+}
+
+
+export function showErrorMessage(message) {
+  const errorMessageContainer = document.querySelector('.errors-block');
+  const errorBlock = errorMessageContainer.querySelector('.popup-text');
+  const closePopup = errorMessageContainer.querySelector('.close-popup');
+
+  document.body.addEventListener('keydown', onKeyDownClose);
+  closePopup.addEventListener('click', onClosePopup);
+  errorMessageContainer.classList.add('active');
+  errorBlock.innerHTML = '';
+  errorBlock.insertAdjacentHTML('afterbegin', message);
+}

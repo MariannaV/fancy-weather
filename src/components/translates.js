@@ -32,7 +32,9 @@ export const translates = {
       december: 'December'
     },
     searchFormData: {
-      errorMessage: 'Incorrect data',
+      errors: {
+        incorrectData: 'Incorrect data',
+      },
       searchInputPlaceholder: 'Search city',
       buttonText: 'Search',
     }
@@ -69,7 +71,9 @@ export const translates = {
       december: 'Декабря'
     },
     searchFormData: {
-      errorMessage: 'Неверные данные',
+      errors: {
+        incorrectData: 'Неверные данные',
+      },
       searchInputPlaceholder: 'Найти город',
       buttonText: 'Поиск',
     }
@@ -106,7 +110,9 @@ export const translates = {
       december: 'Снежні'
     },
     searchFormData: {
-      errorMessage: 'Няслушныя дадзеныя',
+      errors: {
+        incorrectData: 'Няслушныя дадзеныя',
+      },
       searchInputPlaceholder: 'Знайсці горад',
       buttonText: 'Пошук',
     }
