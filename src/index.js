@@ -1,7 +1,12 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import './css/index.scss';
-import { API_weather, API_geolocation, API_images } from './components/APIs';
+import {
+  API_weather,
+  API_geolocation,
+  API_images,
+  LS_API
+} from './components/APIs';
 import {
   createWeatherTodayBlock,
   createWeatherOfSomeDays
@@ -58,8 +63,8 @@ export const store = new Proxy({
   dataWeatherOfSomeDays: new Map(),
   dataWeatherToday: {},
   currentTimeAndDay: {},
-  receivedImage: ''
-
+  receivedImage: '',
+  ...LS_API.data
 }, {
   set: function(target, name, value) {
     target[name] = value;
@@ -78,6 +83,10 @@ export const store = new Proxy({
         renderWithTemperature();
         break;
       }
+    }
+
+    if (['currentLanguage', 'currentTemperatureUnits'].includes(name)) {
+      LS_API.data = { fieldName: name, value };
     }
 
     return true;

@@ -167,3 +167,17 @@ export const API_images = {
     }
   }
 };
+
+export const LS_API = {
+  fieldName: 'fancy-weather',
+  get data() {
+    return JSON.parse(localStorage.getItem(this.fieldName));
+  },
+  set data({ fieldName, value }) {
+    const newLSValue = {
+      ...this.data,
+      [fieldName]: value
+    }
+    return localStorage.setItem(this.fieldName, JSON.stringify(newLSValue));
+  }
+};
