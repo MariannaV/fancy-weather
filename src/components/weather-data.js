@@ -33,7 +33,7 @@ export function createWeatherOfSomeDays() {
     forecastBlock.insertAdjacentHTML('beforeend',
       `
     <div class="weather-of-day">
-        <p>${translate.daysOfWeek[dataOfWeatherDay.dayOfWeek]}</p>
+        <p>${translate.daysOfWeek[dataOfWeatherDay.dayOfWeek].full}</p>
         <p>${dataOfWeatherDay.degree}°</p>
         <img src="http://openweathermap.org/img/wn/${dataOfWeatherDay.icon}@2x.png"/>
     </div>
@@ -52,7 +52,7 @@ function createDate() {
   dateBlock.innerHTML = '';
   dateBlock.insertAdjacentHTML('beforeend',
     `
-    <p>${todayDate}</p>
+    <p>${todayDate.short},</p>
     <p>${dayOfMonth} ${translate.months[month]}</p>
     <p>${timeNow}</p>
     `

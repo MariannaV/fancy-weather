@@ -4,13 +4,13 @@ export const translates = {
     latitude: 'Latitude',
     longitude: 'Longitude',
     daysOfWeek: {
-      monday: 'Monday',
-      tuesday: 'Tuesday',
-      wednesday: 'Wednesday',
-      thursday: 'Thursday',
-      friday: 'Friday',
-      saturday: 'Saturday',
-      sunday: 'Sunday'
+      monday: {full: 'Monday', short: 'Mon'},
+      tuesday: {full: 'Tuesday',  short: 'Tue'},
+      wednesday: {full: 'Wednesday',  short: 'Wed'},
+      thursday: {full: 'Thursday',  short: 'Thu'},
+      friday: {full: 'Friday',  short: 'Fri'},
+      saturday: {full: 'Saturday',  short: 'Sat'},
+      sunday: {full:'Sunday', short: 'Sun'}
     },
     weather: {
       feelsLike: 'feels like',
@@ -43,13 +43,13 @@ export const translates = {
     latitude: 'Ширина',
     longitude: 'Долгота',
     daysOfWeek: {
-      monday: 'Понедельник',
-      tuesday: 'Вторник',
-      wednesday: 'Среда',
-      thursday: 'Четверг',
-      friday: 'Пятница',
-      saturday: 'Суббота',
-      sunday: 'Воскресенье'
+      monday: {full:'Понедельник', short:'Пн'},
+      tuesday: {full:'Вторник', short:'Вт'},
+      wednesday: {full:'Среда', short:'Ср'},
+      thursday: {full: 'Четверг', short:'Чт'},
+      friday: {full: 'Пятница', short:'Пт'},
+      saturday: {full: 'Суббота', short:'Сб'},
+      sunday: {full: 'Воскресенье', short:'Вс'}
     },
     weather: {
       feelsLike: 'ощущается как',
@@ -82,13 +82,13 @@ export const translates = {
     latitude: 'Шыраты',
     longitude: 'Даўгата',
     daysOfWeek: {
-      monday: 'Панядзелак',
-      tuesday: 'Аўторак',
-      wednesday: 'Серада',
-      thursday: 'Чацвер',
-      friday: 'Пятніца',
-      saturday: 'Субота',
-      sunday: 'Нядзеля'
+      monday: {full: 'Панядзелак', short:'Пн'},
+      tuesday: {full: 'Аўторак',short:'Аў'},
+      wednesday: {full: 'Серада', short:'Ср'},
+      thursday: {full: 'Чацвер', short:'Чц'},
+      friday: {full: 'Пятніца', short:'Пт'},
+      saturday: {full: 'Субота', short:'Сб'},
+      sunday: {full: 'Нядзеля', short:'Нд'}
     },
     weather: {
       feelsLike: 'адчуваецца як',
