@@ -182,7 +182,7 @@ function listenSearchForm() {
     try {
       const searchInput = event.target.elements.place;
       store.currentLocation = await API_geolocation.getLocationByCity({ city: searchInput.value.trim() });
-      removeErrorMessageBlock()
+      removeErrorMessageBlock();
     } catch (error) {
       createErrorMessageBlock(error);
     }
@@ -210,7 +210,7 @@ function createSearchForm() {
     <input class="search-input" name="place" placeholder="${translate.searchFormData.searchInputPlaceholder}" autocomplete="off" autofocus="">
   </div>
   <button class="search-button" type="submit">${translate.searchFormData.buttonText}</button>
-  <div class="search-error-block" ${errorId ? `data-test-id=${errorId}`: ''}>${errorId ? translate.searchFormData.errors[errorId] : ''}</div>
+  <div class="search-error-block" ${errorId ? `data-test-id=${errorId}` : ''}>${errorId ? translate.searchFormData.errors[errorId] : ''}</div>
   `
   );
 }
@@ -226,15 +226,27 @@ function degreesToggleHandler() {
   });
 }
 
-
 export function showErrorMessage(message) {
   const errorMessageContainer = document.querySelector('.errors-block');
   const errorBlock = errorMessageContainer.querySelector('.popup-text');
   const closePopup = errorMessageContainer.querySelector('.close-popup');
-
   document.body.addEventListener('keydown', onKeyDownClose);
   closePopup.addEventListener('click', onClosePopup);
   errorMessageContainer.classList.add('active');
   errorBlock.innerHTML = '';
   errorBlock.insertAdjacentHTML('afterbegin', message);
+
+  function onKeyDownClose(event) {
+    if (event.key === 'Escape') {
+      errorMessageContainer.classList.remove('active');
+      closePopup.removeEventListener('click', onClosePopup);
+      document.body.removeEventListener('keydown', onKeyDownClose);
+    }
+  }
+
+  function onClosePopup() {
+    errorMessageContainer.classList.remove('active');
+    closePopup.removeEventListener('click', onClosePopup);
+    document.body.removeEventListener('keydown', onKeyDownClose);
+  }
 }

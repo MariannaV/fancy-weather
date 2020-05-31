@@ -84,7 +84,7 @@ export const API_weather = {
         searchInput.value = '';
         searchInput.setAttribute('placeholder', 'Type correct data');
       } else {
-        alert(`error : ${error}`);
+        showErrorMessage(error);
       }
     }
   }
@@ -112,7 +112,7 @@ export const API_geolocation = {
         }
       };
     } catch (error) {
-      alert(`error : ${error}`);
+      showErrorMessage(error);
     }
   },
   async getLocationByCity({ city }) {
@@ -126,7 +126,7 @@ export const API_geolocation = {
       }
       const { results } = await response.json();
       if (!results.length) {
-        throw {errorField :'incorrectData' };
+        throw { errorField: 'incorrectData' };
       }
 
       const bestMatch = results[0];
@@ -137,7 +137,9 @@ export const API_geolocation = {
         coordinates: bestMatch.geometry
       };
     } catch (error) {
-      alert(error.message === 'bad query' ? 'ERROR' : error);
+      if (!('errorField' in error)) {
+        showErrorMessage(error.message === 'bad query' ? 'bad query' : error);
+      }
       throw error;
     }
   }
@@ -163,7 +165,7 @@ export const API_images = {
       const result = await response.json();
       store.receivedImage = result.urls.regular.replace(/&w=\d+&/, `&w=${window.innerWidth}&`);
     } catch (error) {
-      alert(`error : ${error}`);
+      showErrorMessage(error);
     }
   }
 };
@@ -177,7 +179,7 @@ export const LS_API = {
     const newLSValue = {
       ...this.data,
       [fieldName]: value
-    }
+    };
     return localStorage.setItem(this.fieldName, JSON.stringify(newLSValue));
   }
 };
