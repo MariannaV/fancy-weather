@@ -160,9 +160,13 @@ function createLocationBlock() {
 
 async function changeBackgroundImage() {
   const element = document.body;
+  const loader = document.querySelector('.toggle-background-image')
+  const animationClass = 'with-animation'
+  loader.classList.add(animationClass);
   element.style.setProperty('--prevImg', getComputedStyle(element).getPropertyValue('--currentImg').replace(/\\/g, ''));
   await API_images.getImageUrl();
   element.style.setProperty('--currentImg', `url(${store.receivedImage})`);
+  loader.classList.remove(animationClass);
 }
 
 function backgroundImageToggleButtonHandler() {
