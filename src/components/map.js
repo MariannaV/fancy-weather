@@ -43,11 +43,17 @@ export function googleMapInit() {
 export function addCoordinates() {
   const { lat, lng } = store.currentLocation.coordinates;
   const coordinatesBlock = document.querySelector('.map-section .coordinates');
+  const latArray = lat.toFixed(2).split('.');
+  const lngArray = lng.toFixed(2).split('.');
+  const latDeg = latArray[0];
+  const latMin = latArray[1];
+  const lngDeg = lngArray[0];
+  const lngMin = lngArray[1];
   coordinatesBlock.innerHTML = '';
   coordinatesBlock.insertAdjacentHTML(
     'beforeend',
-    `<p>${store.translate.latitude}: ${lat.toFixed(2)}°</p>
-          <p>${store.translate.longitude}: ${lng.toFixed(2)}°</p>
+    `<p>${store.translate.latitude}: ${latDeg}°${latMin}'</p>
+          <p>${store.translate.longitude}: ${lngDeg}°${lngMin}'</p>
          `
   );
 }
