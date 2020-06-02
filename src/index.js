@@ -175,19 +175,6 @@ function backgroundImageToggleButtonHandler() {
 }
 
 
-function listenSearchForm() {
-  const searchForm = document.getElementById('searchForm');
-  searchForm.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    try {
-      const searchInput = event.target.elements.place;
-      store.currentLocation = await API_geolocation.getLocationByCity({ city: searchInput.value.trim() });
-      removeErrorMessageBlock();
-    } catch (error) {
-      createErrorMessageBlock(error);
-    }
-  });
-};
 
 
 function selectHandler() {
@@ -203,17 +190,44 @@ function createSearchForm() {
   const searchForm = document.getElementById('searchForm');
   const errorBlock = searchForm.querySelector('.search-error-block');
   const errorId = errorBlock?.dataset?.testId;
+  const voteSearchButton = () => document.querySelector('.vote-search');
+
+  voteSearchButton()?.removeEventListener('click', recognizeSpeechHandler);
+
   searchForm.innerHTML = '';
   searchForm.insertAdjacentHTML('beforeend',
     `
   <div class="search-wrapper">
     <input class="search-input" name="place" placeholder="${translate.searchFormData.searchInputPlaceholder}" autocomplete="off" autofocus="">
+    <button type="button" class="vote-search">X</button>
   </div>
   <button class="search-button" type="submit">${translate.searchFormData.buttonText}</button>
   <div class="search-error-block" ${errorId ? `data-test-id=${errorId}` : ''}>${errorId ? translate.searchFormData.errors[errorId] : ''}</div>
   `
   );
+
+
+  voteSearchButton().addEventListener('click', recognizeSpeechHandler);
+
+  async function recognizeSpeechHandler() {
+    searchForm.querySelector('[name=place]').value = await API_speechRecogniniton.recognizeSpeech();
+    searchForm.requestSubmit()
+  }
 }
+
+function listenSearchForm() {
+  const searchForm = document.getElementById('searchForm');
+  searchForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    try {
+      const searchInput = event.target.elements.place;
+      store.currentLocation = await API_geolocation.getLocationByCity({ city: searchInput.value.trim() });
+      removeErrorMessageBlock();
+    } catch (error) {
+      createErrorMessageBlock(error);
+    }
+  });
+};
 
 function degreesToggleHandler() {
   const toggleTemperatureBlock = document.querySelector('.toggle-temperature');
@@ -250,3 +264,42 @@ export function showErrorMessage(message) {
     document.body.removeEventListener('keydown', onKeyDownClose);
   }
 }
+
+const API_speechRecogniniton = {
+  async recognizeSpeech() {
+    return new Promise(async (resolve, reject) => {
+      const { currentLanguage } = store;
+
+      try {
+        await getMedia({ audio: true });
+
+        if ('webkitSpeechRecognition' in window) {
+          const recognition = new webkitSpeechRecognition();
+          recognition.lang = currentLanguage;
+          recognition.onresult = await function(event) {
+            const result = event.results[event.resultIndex];
+            resolve(result[0].transcript);
+          };
+
+          recognition.start();
+        } else {
+          const error = 'webkitSpeechRecognition is not supported';
+          showErrorMessage(error);
+          reject(error);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    });
+  }
+};
+
+async function getMedia(constraints) {
+  let stream = null;
+  try {
+    stream = await navigator.mediaDevices.getUserMedia(constraints);
+  } catch (error) {
+    showErrorMessage(error);
+  }
+}
+
