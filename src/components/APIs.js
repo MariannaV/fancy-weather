@@ -1,4 +1,4 @@
-import {store} from '../index';
+import { showErrorMessage, store } from '../index';
 
 
 export const API_weather = {
@@ -46,18 +46,18 @@ export const API_weather = {
           return new Date().toLocaleTimeString('en-US', {
             timeZone: result.timezone,
             hour12: false
-          })
+          });
         },
         get dayOfMonth() {
-          return (new Date().toDateString('be-BY', {
-            timeZone: result.timezone,
-          })).toString().split(' ')[2]
+          return (new Date().toDateString('en-US', {
+            timeZone: result.timezone
+          })).toString().split(' ')[2];
         },
-        get month(){
-          return (new Date().toDateString('be-BY', {
-            timeZone: result.timezone,
+        get month() {
+          return (new Date().toDateString('en-US', {
+            timeZone: result.timezone
           })).toString().split(' ')[1].toLocaleLowerCase();
-        },
+        }
       };
 
 
@@ -73,9 +73,9 @@ export const API_weather = {
           degree: Math.round(((resultItem.temp.min + resultItem.temp.max) / 2)),
           dayOfWeek: new Date(resultItem.dt * 1000).toLocaleString('en-US', {
             timeZone: result.timezone,
-            weekday: 'long',
+            weekday: 'long'
           }).toLocaleLowerCase(),
-          icon: resultItem.weather[0].icon,
+          icon: resultItem.weather[0].icon
         });
       }
     } catch (error) {

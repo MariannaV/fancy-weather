@@ -17,13 +17,11 @@ import { googleMapInit, addCoordinates } from './components/map';
 async function render() {
   createLocationBlock();
   await API_weather.getWeather();
-  createWeatherTodayBlock(); //если данные брать из стора: то не нужены параметры
+  createWeatherTodayBlock();
   createWeatherOfSomeDays();
   googleMapInit();
   createSearchForm();
-  // googleMapAPI.toggleLocation(currentLocation);
   addCoordinates();
-  // changeBackgroundImage(API_images.receivedImage)
 }
 
 async function renderWithLanguage() {
@@ -42,8 +40,9 @@ async function renderWithTemperature() {
 }
 
 window.onload = async () => {
-  await createSearchForm();
+  document.querySelector('[name=currentLanguage]').value = store.currentLanguage;
   // changeBackgroundImage().then(changeBackgroundImage);
+  createSearchForm();
   listenSearchForm();
   selectHandler();
   backgroundImageToggleButtonHandler();
@@ -58,7 +57,7 @@ export const store = new Proxy({
   get translate() {
     return translates[this.currentLanguage];
   },
-  currentTemperatureUnits: 'celsius', //'fahrenheit'
+  currentTemperatureUnits: 'celsius',
   currentLocation: { city: null, country: null, lat: null, lng: null },
   dataWeatherOfSomeDays: new Map(),
   dataWeatherToday: {},
@@ -160,12 +159,12 @@ function createLocationBlock() {
 
 async function changeBackgroundImage() {
   const element = document.body;
-  const loader = document.querySelector('.toggle-background-image')
-  const animationClass = 'with-animation'
+  const loader = document.querySelector('.toggle-background-image');
+  const animationClass = 'with-animation';
   loader.classList.add(animationClass);
   element.style.setProperty('--prevImg', getComputedStyle(element).getPropertyValue('--currentImg').replace(/\\/g, ''));
   await API_images.getImageUrl();
-  element.style.setProperty('--currentImg', `url(${store.receivedImage})`);
+  if (store.receivedImage) element.style.setProperty('--currentImg', `url(${store.receivedImage})`);
   loader.classList.remove(animationClass);
 }
 
@@ -190,16 +189,16 @@ function createSearchForm() {
   const searchForm = document.getElementById('searchForm');
   const errorBlock = searchForm.querySelector('.search-error-block');
   const errorId = errorBlock?.dataset?.testId;
-  const voteSearchButton = () => document.querySelector('.vote-search');
+  const voiceSearchButton = () => document.querySelector('.voice-search');
 
-  voteSearchButton()?.removeEventListener('click', recognizeSpeechHandler);
+  voiceSearchButton()?.removeEventListener('click', recognizeSpeechHandler);
 
   searchForm.innerHTML = '';
   searchForm.insertAdjacentHTML('beforeend',
     `
   <div class="search-wrapper">
     <input class="search-input" name="place" placeholder="${translate.searchFormData.searchInputPlaceholder}" autocomplete="off" autofocus="">
-    <button type="button" class="vote-search">X</button>
+    <button type="button" class="voice-search">X</button>
   </div>
   <button class="search-button" type="submit">${translate.searchFormData.buttonText}</button>
   <div class="search-error-block" ${errorId ? `data-test-id=${errorId}` : ''}>${errorId ? translate.searchFormData.errors[errorId] : ''}</div>
@@ -207,9 +206,10 @@ function createSearchForm() {
   );
 
 
-  voteSearchButton().addEventListener('click', recognizeSpeechHandler);
+  voiceSearchButton().addEventListener('click', recognizeSpeechHandler);
 
   async function recognizeSpeechHandler() {
+    searchForm.querySelector('.voice-search').classList.add('active');
     searchForm.querySelector('[name=place]').value = await API_speechRecogniniton.recognizeSpeech();
     searchForm.requestSubmit()
   }
