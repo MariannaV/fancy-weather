@@ -10,28 +10,23 @@ html(lang="ru")
             header.header
                 .control-block
                     button.toggle-block.toggle-background-image
-                    select.toggle-block
+                    select(name='currentLanguage').toggle-block
                         option(value="en" selected) en
                         option(value="ru") ru
                         option(value="be") be
-                    button.toggle-block.toggle-temperature F/C
-                form(id="searchCity").search-form
+                    .toggle-block.toggle-temperature.celsius
+                        button.toggle-temperature-button.fahrenheit(data-degree='fahrenheit') F
+                        button.toggle-temperature-button.celsius(data-degree='celsius') C
+                form(id="searchForm").search-form
                     .search-wrapper
-                        input(placeholder='Search city' autocomplete="off" autofocus).search-input
-                        button(type='button').vote-search x
-                    button(type='submit').search-button Search
             section.about-weather
                 article.main-block
                     .header-block
-                        .title.location MINSK
-                        .date 15 May
+                        .title.location
+                        .date
                     .content-block.weather-today-block
-                        .degree-value 10
+                        .degree-value
                         .additional-information
-                            p overcast
-                            p feels like
-                            p wind
-                            p humidity
                 article.bottom-block.forecast-of-some-days
             section.map-section
                 #map
