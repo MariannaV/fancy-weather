@@ -5,7 +5,7 @@ export const API_weather = {
     return '69608718e01c4ff1e36fa29958bb43b6';
   },
   async getWeather() {
-    const { currentLanguage, translate, currentLocation, currentTemperatureUnits } = store;
+    const { currentLanguage, currentLocation, currentTemperatureUnits } = store;
     const { city, coordinates } = currentLocation;
 
     try {
@@ -195,10 +195,10 @@ export const API_speechRecogniniton = {
       const { currentLanguage } = store;
 
       try {
-        await getMedia({ audio: true });
+        await getPermissions({ audio: true });
 
-        if ('webkitSpeechRecognition' in window) {
-          const recognition = new webkitSpeechRecognition();
+        if ('webkitSpeechRecognition' in globalThis) {
+          const recognition = new globalThis.webkitSpeechRecognition();
           recognition.lang = currentLanguage;
           recognition.onresult = await function (event) {
             const result = event.results[event.resultIndex];
@@ -216,3 +216,11 @@ export const API_speechRecogniniton = {
     });
   },
 };
+
+async function getPermissions(constraints) {
+  try {
+    await navigator.mediaDevices.getUserMedia(constraints);
+  } catch (error) {
+    showErrorMessage(error);
+  }
+}

@@ -4,14 +4,14 @@ import './css/index.scss';
 import { API_weather, API_geolocation, API_images, LS_API, API_speechRecogniniton } from './components/APIs';
 import { createWeatherTodayBlock, createWeatherOfSomeDays } from './components/weather-data';
 import { translates } from './components/translates';
-import { googleMapInit, addCoordinates } from './components/map';
+import { googleMapRender, addCoordinates } from './components/map';
 
 async function render() {
   createLocationBlock();
   await API_weather.getWeather();
   createWeatherTodayBlock();
   createWeatherOfSomeDays();
-  googleMapInit();
+  googleMapRender();
   createSearchForm();
   addCoordinates();
 }
@@ -54,7 +54,8 @@ export const store = new Proxy(
     ...LS_API.data,
   },
   {
-    set: function (target, name, value) {
+    set(target, name, value) {
+      // eslint-disable-next-line no-param-reassign
       target[name] = value;
 
       switch (name) {
@@ -71,6 +72,8 @@ export const store = new Proxy(
           renderWithTemperature();
           break;
         }
+        default:
+          break;
       }
 
       if (['currentLanguage', 'currentTemperatureUnits'].includes(name)) {
@@ -237,14 +240,5 @@ export function showErrorMessage(message) {
     errorMessageContainer.classList.remove('active');
     closePopup.removeEventListener('click', onClosePopup);
     document.body.removeEventListener('keydown', onKeyDownClose);
-  }
-}
-
-async function getMedia(constraints) {
-  let stream = null;
-  try {
-    stream = await navigator.mediaDevices.getUserMedia(constraints);
-  } catch (error) {
-    showErrorMessage(error);
   }
 }

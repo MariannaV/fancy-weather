@@ -1,6 +1,6 @@
 import { store } from '../index';
 
-export function googleMapInit() {
+export function googleMapRender() {
   const { coordinates } = store.currentLocation;
   const mapId = 'googleMapScript';
   const isMapExist = document.getElementById(mapId);
@@ -20,6 +20,7 @@ export function googleMapInit() {
 
   function googleMapInit() {
     const { lat, lng } = coordinates;
+    const { google } = globalThis;
     const map = new google.maps.Map(document.getElementById('map'), {
       center: {
         lat,
@@ -28,12 +29,12 @@ export function googleMapInit() {
       zoom: 10,
     });
 
-    const marker = new google.maps.Marker({
+    new google.maps.Marker({
       position: {
         lat,
         lng,
       },
-      map: map,
+      map,
     });
   }
 }
