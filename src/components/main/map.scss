@@ -1,0 +1,20 @@
+.map-section {
+  @media (max-width: $min-desktop) {
+    margin-top: 30px;
+    width: 100%;
+  }
+}
+
+#map {
+  border-radius: 5%;
+  height: 400px;
+  width: 400px;
+  @media (max-width: $min-desktop) {
+    width: 100%;
+  }
+}
+
+.coordinates {
+  font-size: 0.8em;
+  margin-top: 35px;
+}
