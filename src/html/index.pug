@@ -10,13 +10,11 @@ html(lang="ru")
             header.header
                 .control-block
                     button.toggle-block.toggle-background-image
-                    select(name='currentLanguage').toggle-block
+                    select(name='currentLanguage').toggle-block.toggle-language
                         option(value="en" selected) en
                         option(value="ru") ru
                         option(value="be") be
                     .toggle-block.toggle-temperature.celsius
-                        button.toggle-temperature-button.fahrenheit(data-degree='fahrenheit') F
-                        button.toggle-temperature-button.celsius(data-degree='celsius') C
                 form(id="searchForm").search-form
                     .search-wrapper
             section.about-weather

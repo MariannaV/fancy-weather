@@ -4,8 +4,7 @@ import { store } from '../index';
 export function createWeatherTodayBlock() {
   clearInterval(createDate);
   const { weather, degree, feelsLike, wind, humidity, icon } = store.dataWeatherToday;  //store.dataWeatherToday
-  console.log('xx',store.translate);
-  const weatherTodayBlock = document.querySelector('.about-weather .weather-today-block');
+   const weatherTodayBlock = document.querySelector('.about-weather .weather-today-block');
   weatherTodayBlock.innerHTML = '';
   weatherTodayBlock.insertAdjacentHTML('beforeend',
     `
@@ -23,12 +22,9 @@ export function createWeatherTodayBlock() {
 
 export function createWeatherOfSomeDays() {
   const { dataWeatherOfSomeDays,  translate } = store;
-  // const {daysOfWeek} = store.currentTimeAndDay;
   const dataOfWeatherForCity = dataWeatherOfSomeDays.get(store.currentLocation.city);
-  // const { degree, weather, dayOfWeek, icon } = dataOfWeatherForCity;
   const forecastBlock = document.querySelector('.about-weather .forecast-of-some-days');
   forecastBlock.innerHTML = '';
-  console.log('123', dataOfWeatherForCity, translate)
   dataOfWeatherForCity.forEach(dataOfWeatherDay => {
     forecastBlock.insertAdjacentHTML('beforeend',
       `
@@ -40,14 +36,11 @@ export function createWeatherOfSomeDays() {
     `
     );
   });
-  //  <p>${dataOfWeatherDay.translate.dayOfWeek}</p>
 };
 
 function createDate() {
   const {translate} = store;
   const { todayDate, timeNow, dayOfMonth, month } = store.currentTimeAndDay;
-  // let timeNow = `${days[date.getDay()]}, ${date.getDate()} ${months[date.getMonth()]}, ${date.toLocaleTimeString('en-US', { hour12: false })}`;
-
   const dateBlock = document.querySelector('.header-block .date');
   dateBlock.innerHTML = '';
   dateBlock.insertAdjacentHTML('beforeend',

@@ -18,8 +18,6 @@ export const API_weather = {
         'celsius': 'metric',
         'fahrenheit': 'imperial'
       };
-      //TODO: use first API
-      //correct time, (new Date(result.current.dt).toLocaleString("en-US", {timeZone: result.timezone, weekday: 'long' })
       const response = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${coordinates.lat}&lon=${coordinates.lng}&lang=${currentLanguage}&exclude=${'hourly,minutely'}&appid=${this.apikey}&units=${units[currentTemperatureUnits]}`);
       if (!response.ok) {
         throw Error('Something went wrong');
@@ -60,10 +58,6 @@ export const API_weather = {
         }
       };
 
-
-      // timeZone: result.timezone
-
-      // if (!store.dataWeatherOfSomeDays.has(city))
       store.dataWeatherOfSomeDays.set(city, []);
 
       for (let i = 1; i < amountOfForecastDays && i < result.daily.length; i += 1) {
@@ -145,13 +139,6 @@ export const API_geolocation = {
   }
 };
 
-//
-// export const API_map = {
-//   get apikey() {
-//     return 'pk.eyJ1IjoibWFyaWFubmF2IiwiYSI6ImNrYWJnM2prMTE2M3Myem10Ym1nNWxveHAifQ.E7kEmcUZEKnrYE-ts0u7xw';
-//   }
-// };
-
 export const API_images = {
   get apikey() {
     return '_cXf5V9ZeOttjJE2clN9URiApDrCRiB8g2frf30AS-M';
@@ -181,5 +168,32 @@ export const LS_API = {
       [fieldName]: value
     };
     return localStorage.setItem(this.fieldName, JSON.stringify(newLSValue));
+  }
+};
+export const API_speechRecogniniton = {
+  async recognizeSpeech() {
+    return new Promise(async (resolve, reject) => {
+      const { currentLanguage } = store;
+
+      try {
+        await getMedia({ audio: true });
+
+        if ('webkitSpeechRecognition' in window) {
+          const recognition = new webkitSpeechRecognition();
+          recognition.lang = currentLanguage;
+          recognition.onresult = await function(event) {
+            const result = event.results[event.resultIndex];
+            resolve(result[0].transcript);
+          };
+
+          recognition.start();
+        } else {
+          throw Error('webkitSpeechRecognition is not supported')
+        }
+      } catch (error) {
+        showErrorMessage(error);
+        reject(error);
+      }
+    });
   }
 };
