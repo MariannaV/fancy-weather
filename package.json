@@ -1,36 +1,76 @@
 {
   "name": "fancy-weather",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "private": true,
+  "browserslist": [
+    ">=1%",
+    "not ie <= 11",
+    "not dead"
+  ],
+  "workspaces": [
+    "./src/**",
+    "./configs/**/"
+  ],
   "scripts": {
-    "build": "webpack",
-    "start": "webpack-dev-server --open"
+    "develop": "webpack-dev-server --open",
+    "format:fix": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint:fix": "eslint --fix ./src & stylelint --fix src/**/*.{css,scss,pcss}",
+    "lint:check": "eslint ./src & stylelint src/**/*.{css,scss,pcss}",
+    "build": "webpack --mode=production",
+    "server": "yarn serve dist",
+    "deploy:now": "cd fancy-weather && now -d --public --prod",
+    "upgrade-packages": "ncu -ui"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn format:check && yarn lint:check",
+      "post-commit": "git update-index --again"
+    }
+  },
+  "babel": {
+    "extends": "./configs/babelrc.js"
+  },
+  "eslintConfig": {
+    "extends": "./configs/linters/.eslintrc.js"
+  },
+  "stylelint": {
+    "extends": "./configs/linters/.stylelintrc.js"
+  },
+  "devDependencies": {
+    "core-js": "3.6.5",
+    "@babel/core": "7.10.2",
+    "@babel/plugin-transform-runtime": "7.10.1",
+    "@babel/preset-env": "7.10.2",
+    "babel-loader": "8.1.0",
+    "clean-webpack-plugin": "3.0.0",
+    "css-loader": "3.5.3",
+    "html-webpack-plugin": "4.3.0",
+    "mini-css-extract-plugin": "0.9.0",
+    "style-loader": "1.2.1",
+    "postcss-loader": "3.0.0",
+    "file-loader": "6.0.0",
+    "webpack": "4.43.0",
+    "webpack-cli": "3.3.11",
+    "webpack-dev-server": "3.11.0",
+    "pug": "3.0.0",
+    "pug-loader": "2.4.0",
+    "cross-env": "7.0.2"
+  },
+  "optionalDependencies": {
+    "husky": "4.2.5",
+    "now": "19.0.1",
+    "npm-check-updates": "6.0.1",
+    "prettier": "2.0.5",
+    "serve": "11.3.1"
   },
   "license": "ISC",
-  "devDependencies": {
-    "@babel/core": "^7.7.4",
-    "@babel/plugin-proposal-class-properties": "^7.7.4",
-    "@babel/preset-env": "^7.7.4",
-    "@babel/preset-typescript": "^7.7.4",
-    "@typescript-eslint/eslint-plugin": "^2.9.0",
-    "@typescript-eslint/parser": "^2.9.0",
-    "babel-loader": "^8.0.6",
-    "clean-webpack-plugin": "^3.0.0",
-    "css-loader": "^3.2.0",
-    "eslint": "^6.7.1",
-    "eslint-config-google": "^0.14.0",
-    "eslint-loader": "^3.0.2",
-    "html-webpack-plugin": "^4.3.0",
-    "mini-css-extract-plugin": "^0.8.0",
-    "node-sass": "^4.13.1",
-    "sass-loader": "^8.0.2",
-    "style-loader": "^1.0.1",
-    "typescript": "^3.7.2",
-    "webpack": "^4.41.2",
-    "webpack-cli": "^3.3.10",
-    "webpack-dev-server": "^3.9.0",
-    "pug": "^2.0.4",
-    "pug-loader": "^2.4.0"
+  "version": "1.0.0",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MariannaV/fancy-weather"
+  },
+  "bugs": {
+    "url": "https://github.com/MariannaV/fancy-weather/issues"
   }
 }
