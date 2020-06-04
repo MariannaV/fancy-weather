@@ -1,21 +1,20 @@
-
 export const translates = {
   en: {
     latitude: 'Latitude',
     longitude: 'Longitude',
     daysOfWeek: {
-      monday: {full: 'Monday', short: 'Mon'},
-      tuesday: {full: 'Tuesday',  short: 'Tue'},
-      wednesday: {full: 'Wednesday',  short: 'Wed'},
-      thursday: {full: 'Thursday',  short: 'Thu'},
-      friday: {full: 'Friday',  short: 'Fri'},
-      saturday: {full: 'Saturday',  short: 'Sat'},
-      sunday: {full:'Sunday', short: 'Sun'}
+      monday: { full: 'Monday', short: 'Mon' },
+      tuesday: { full: 'Tuesday', short: 'Tue' },
+      wednesday: { full: 'Wednesday', short: 'Wed' },
+      thursday: { full: 'Thursday', short: 'Thu' },
+      friday: { full: 'Friday', short: 'Fri' },
+      saturday: { full: 'Saturday', short: 'Sat' },
+      sunday: { full: 'Sunday', short: 'Sun' },
     },
     weather: {
       feelsLike: 'feels like',
       wind: 'wind',
-      humidity: 'humidity'
+      humidity: 'humidity',
     },
     months: {
       january: 'January',
@@ -29,7 +28,7 @@ export const translates = {
       september: 'September',
       october: 'October',
       november: 'November',
-      december: 'December'
+      december: 'December',
     },
     searchFormData: {
       errors: {
@@ -37,29 +36,29 @@ export const translates = {
       },
       searchInputPlaceholder: 'Search city',
       buttonText: 'Search',
-    }
+    },
   },
   ru: {
     latitude: 'Ширина',
     longitude: 'Долгота',
     daysOfWeek: {
-      monday: {full:'Понедельник', short:'Пн'},
-      tuesday: {full:'Вторник', short:'Вт'},
-      wednesday: {full:'Среда', short:'Ср'},
-      thursday: {full: 'Четверг', short:'Чт'},
-      friday: {full: 'Пятница', short:'Пт'},
-      saturday: {full: 'Суббота', short:'Сб'},
-      sunday: {full: 'Воскресенье', short:'Вс'}
+      monday: { full: 'Понедельник', short: 'Пн' },
+      tuesday: { full: 'Вторник', short: 'Вт' },
+      wednesday: { full: 'Среда', short: 'Ср' },
+      thursday: { full: 'Четверг', short: 'Чт' },
+      friday: { full: 'Пятница', short: 'Пт' },
+      saturday: { full: 'Суббота', short: 'Сб' },
+      sunday: { full: 'Воскресенье', short: 'Вс' },
     },
     weather: {
       feelsLike: 'ощущается как',
       wind: 'ветер',
-      humidity: 'влажность'
+      humidity: 'влажность',
     },
     months: {
       january: 'Января',
       february: 'Февраля',
-      march:'Марта',
+      march: 'Марта',
       april: 'Апреля',
       may: 'Мая',
       jun: 'Июня',
@@ -68,7 +67,7 @@ export const translates = {
       september: 'Сентября',
       october: 'Октября',
       november: 'Ноября',
-      december: 'Декабря'
+      december: 'Декабря',
     },
     searchFormData: {
       errors: {
@@ -76,24 +75,24 @@ export const translates = {
       },
       searchInputPlaceholder: 'Найти город',
       buttonText: 'Поиск',
-    }
+    },
   },
   be: {
     latitude: 'Шыраты',
     longitude: 'Даўгата',
     daysOfWeek: {
-      monday: {full: 'Панядзелак', short:'Пн'},
-      tuesday: {full: 'Аўторак',short:'Аў'},
-      wednesday: {full: 'Серада', short:'Ср'},
-      thursday: {full: 'Чацвер', short:'Чц'},
-      friday: {full: 'Пятніца', short:'Пт'},
-      saturday: {full: 'Субота', short:'Сб'},
-      sunday: {full: 'Нядзеля', short:'Нд'}
+      monday: { full: 'Панядзелак', short: 'Пн' },
+      tuesday: { full: 'Аўторак', short: 'Аў' },
+      wednesday: { full: 'Серада', short: 'Ср' },
+      thursday: { full: 'Чацвер', short: 'Чц' },
+      friday: { full: 'Пятніца', short: 'Пт' },
+      saturday: { full: 'Субота', short: 'Сб' },
+      sunday: { full: 'Нядзеля', short: 'Нд' },
     },
     weather: {
       feelsLike: 'адчуваецца як',
       wind: 'вецер',
-      humidity: 'вільготнасць'
+      humidity: 'вільготнасць',
     },
     months: {
       january: 'Студзень',
@@ -107,7 +106,7 @@ export const translates = {
       september: 'Верасень',
       october: 'Кастрычнік',
       november: 'Лістапада',
-      december: 'Снежні'
+      december: 'Снежні',
     },
     searchFormData: {
       errors: {
@@ -115,6 +114,6 @@ export const translates = {
       },
       searchInputPlaceholder: 'Знайсці горад',
       buttonText: 'Пошук',
-    }
-  }
+    },
+  },
 };

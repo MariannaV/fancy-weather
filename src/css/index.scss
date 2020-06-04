@@ -4,19 +4,22 @@
 
 $colorWhite: rgb(255, 255, 255);
 $colorBlue: rgb(0, 0, 255);
-$colorRed:rgb(255, 0, 0);
+$colorRed: rgb(255, 0, 0);
 
 /*--------------------*/
 
-
 /*----------BASIC----------*/
-button, select, input {
+button,
+select,
+input {
   border: initial;
   background: initial;
   outline: none;
 }
 
-a, button, select {
+a,
+button,
+select {
   cursor: pointer;
 }
 
@@ -40,7 +43,9 @@ a, button, select {
     position: fixed;
     top: 0;
     left: 0;
-    background-image: linear-gradient(rgba(8, 15, 26, 0.59) 0%, rgba(17, 17, 46, 0.46) 100%), var(--prevImg, linear-gradient(rgba(8, 15, 26, 0.59) 0%, rgba(17, 17, 46, 0.46) 100%)), var(--currentImg,  url(../img/background-image.jpeg));
+    background-image: linear-gradient(rgba(8, 15, 26, 0.59) 0%, rgba(17, 17, 46, 0.46) 100%),
+      var(--prevImg, linear-gradient(rgba(8, 15, 26, 0.59) 0%, rgba(17, 17, 46, 0.46) 100%)),
+      var(--currentImg, url(../img/background-image.jpeg));
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
@@ -58,7 +63,6 @@ a, button, select {
   }
 }
 
-
 /*----------HEADER----------*/
 
 .header {
@@ -66,7 +70,7 @@ a, button, select {
   justify-content: space-between;
   width: 100%;
   margin-bottom: 60px;
-  @media(max-width: 767px) {
+  @media (max-width: 767px) {
     flex-direction: column;
     align-items: center;
   }
@@ -81,10 +85,10 @@ a, button, select {
   .date {
     display: flex;
 
-   @media (max-width: 449px) {
-     flex-direction: column;
-   }
-    @media(min-width: 450px)  {
+    @media (max-width: 449px) {
+      flex-direction: column;
+    }
+    @media (min-width: 450px) {
       & > * + * {
         margin-left: 9px;
       }
@@ -100,7 +104,7 @@ a, button, select {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  @media(max-width: 449px){
+  @media (max-width: 449px) {
     width: 100%;
   }
 }
@@ -110,14 +114,14 @@ a, button, select {
   height: 55px;
   font-size: 24px;
   padding: 5px;
-  background-color: rgba(180, 184, 187, .7);
+  background-color: rgba(180, 184, 187, 0.7);
   border-radius: 5px;
-
 }
 
-.toggle-background-image, .toggle-language{
-  &:hover{
-    background-color: rgba(180, 184, 187, .9);
+.toggle-background-image,
+.toggle-language {
+  &:hover {
+    background-color: rgba(180, 184, 187, 0.9);
   }
 }
 .toggle-temperature {
@@ -138,33 +142,30 @@ a, button, select {
   input {
     display: none;
 
-
-    &:not(:checked) + label{
-
-      background-color: rgba(243, 243, 243, .2);
-      &:hover{
-        background-color: rgba(180, 184, 187, .9);
+    &:not(:checked) + label {
+      background-color: rgba(243, 243, 243, 0.2);
+      &:hover {
+        background-color: rgba(180, 184, 187, 0.9);
       }
     }
     &:checked + label {
-      background-color: rgba(180, 184, 187, .7);
+      background-color: rgba(180, 184, 187, 0.7);
       pointer-events: none;
     }
   }
-  label{
-    transition:  background .3s;
+  label {
+    transition: background 0.3s;
     cursor: pointer;
-    &:first-of-type{
+    &:first-of-type {
       border-top-left-radius: 5px;
       border-bottom-left-radius: 5px;
     }
-    &:last-of-type{
+    &:last-of-type {
       border-top-right-radius: 5px;
       border-bottom-right-radius: 5px;
     }
   }
 }
-
 
 .toggle-background-image {
   background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNTEyIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiIgd2lkdGg9IjUxMiIgY2xhc3M9IiI+PGc+PHBhdGggZD0ibTYxLjQ5NjA5NCAyNzkuNjA5Mzc1Yy0uOTg4MjgyLTguMjM0Mzc1LTEuNDk2MDk0LTE2LjQxNDA2My0xLjQ5NjA5NC0yMy42MDkzNzUgMC0xMDcuNDAyMzQ0IDg4LjU5NzY1Ni0xOTYgMTk2LTE5NiA1MC4wOTc2NTYgMCA5NyAyMC4xOTkyMTkgMTMxLjUgNTEuNjk5MjE5bC0xNy4zMDA3ODEgMTcuNjAxNTYyYy0zLjg5ODQzOCAzLjg5ODQzOC01LjM5ODQzOCA5LjU5NzY1Ny0zLjg5ODQzOCAxNSAxLjgwMDc4MSA1LjA5NzY1NyA2IDkgMTEuMzk4NDM4IDEwLjE5OTIxOSAzLjAxOTUzMS42MDU0NjkgMTAyLjIxNDg0MyAzMi41NzAzMTIgOTUuODk4NDM3IDMxLjMwMDc4MSA4LjAzNTE1NiAyLjY3NTc4MSAxOS45MTc5NjktNS44OTQ1MzEgMTcuNzAzMTI1LTE3LjY5OTIxOS0uNjA5Mzc1LTMuMDIzNDM3LTIyLjU3MDMxMi0xMTMuMjE0ODQzLTIxLjMwMDc4MS0xMDYuOTAyMzQzLTEuMTk5MjE5LTUuMzk4NDM4LTUuMTAxNTYyLTkuODk4NDM4LTEwLjUtMTEuMzk4NDM4LTUuMDk3NjU2LTEuNS0xMC44MDA3ODEgMC0xNC42OTkyMTkgMy44OTg0MzhsLTE0LjY5OTIxOSAxNC4zOTg0MzdjLTQ1LjMwMDc4MS00Mi4yOTY4NzUtMTA3LjUwMzkwNi02OC4wOTc2NTYtMTc0LjEwMTU2Mi02OC4wOTc2NTYtMTQwLjY5OTIxOSAwLTI1NiAxMTUuMzAwNzgxLTI1NiAyNTZ2LjU5NzY1NmMwIDguNDU3MDMyLjM4NjcxOSAxNC45OTIxODguODM1OTM4IDE5Ljk5MjE4OC41OTc2NTYgNi42MjUgNS40ODA0NjggMTIuMDUwNzgxIDEyLjAwMzkwNiAxMy4zNTkzNzVsMzAuODE2NDA2IDYuMTYwMTU2YzEwLjAzMTI1IDIuMDA3ODEzIDE5LjA1MDc4MS02LjQwMjM0NCAxNy44Mzk4NDQtMTYuNXptMCAwIiBkYXRhLW9yaWdpbmFsPSIjMDAwMDAwIiBjbGFzcz0iYWN0aXZlLXBhdGgiIGRhdGEtb2xkX2NvbG9yPSIjMDAwMDAwIiBzdHlsZT0iZmlsbDojRkZGRkZGIj48L3BhdGg+PHBhdGggZD0ibTQ5OS4yNSAyMjIuMDI3MzQ0LTMwLjkwNjI1LTYuMjk2ODc1Yy0xMC4wNDI5NjktMi4wNDY4NzUtMTkuMTI1IDYuMzcxMDkzLTE3Ljg5MDYyNSAxNi41MTU2MjUgMS4wNzAzMTMgOC43NTM5MDYgMS41NDY4NzUgMTcuMjY1NjI1IDEuNTQ2ODc1IDIzLjc1MzkwNiAwIDEwNy4zOTg0MzgtODguNTk3NjU2IDE5Ni0xOTYgMTk2LTUwLjA5NzY1NiAwLTk3LTIwLjE5OTIxOS0xMzEuNS01MmwxNy4zMDA3ODEtMTcuMzAwNzgxYzMuODk4NDM4LTMuODk4NDM4IDUuMzk4NDM4LTkuNTk3NjU3IDMuODk4NDM4LTE1LTEuODAwNzgxLTUuMTAxNTYzLTYtOS0xMS4zOTg0MzgtMTAuMTk5MjE5LTMuMDE5NTMxLS42MDkzNzUtMTAyLjIxNDg0My0zMi41NzAzMTItOTUuODk4NDM3LTMxLjMwMDc4MS01LjEwMTU2My0uODk4NDM4LTEwLjIwMzEyNS42MDE1NjItMTMuNSA0LjE5OTIxOS0zLjYwMTU2MyAzLjMwMDc4MS01LjEwMTU2MyA4LjY5OTIxOC00LjIwMzEyNSAxMy41LjYwOTM3NSAzLjAxOTUzMSAyMi41NzQyMTkgMTEyLjIxMDkzNyAyMS4zMDQ2ODcgMTA1Ljg5ODQzNyAxLjE5NTMxMyA1LjQwMjM0NCA1LjA5NzY1NiA5LjkwMjM0NCAxMC40OTYwOTQgMTEuMzk4NDM3IDYuMjYxNzE5IDEuNTcwMzEzIDExLjQ4ODI4MS0uMzI4MTI0IDE0LjY5OTIxOS0zLjg5ODQzN2wxNC40MDIzNDMtMTQuMzk4NDM3YzQ1LjI5Njg3NiA0Mi4zMDA3ODEgMTA3LjUgNjkuMTAxNTYyIDE3NC4zOTg0MzggNjkuMTAxNTYyIDE0MC42OTkyMTkgMCAyNTYtMTE1LjMwMDc4MSAyNTYtMjU2di0uOTAyMzQ0YzAtNi42NDg0MzctLjI0MjE4OC0xMy4xNzU3ODEtLjc5Njg3NS0xOS42NjQwNjItLjU3MDMxMy02LjYyODkwNi01LjQzMzU5NC0xMi4wNzQyMTktMTEuOTUzMTI1LTEzLjQwNjI1em0wIDAiIGRhdGEtb3JpZ2luYWw9IiMwMDAwMDAiIGNsYXNzPSJhY3RpdmUtcGF0aCIgZGF0YS1vbGRfY29sb3I9IiMwMDAwMDAiIHN0eWxlPSJmaWxsOiNGRkZGRkYiPjwvcGF0aD48L2c+IDwvc3ZnPg==);
@@ -180,17 +181,17 @@ a, button, select {
 @keyframes spin {
   0% {
     -webkit-transform: rotate(0);
-    transform: rotate(0)
+    transform: rotate(0);
   }
 
   80% {
     -webkit-transform: rotate(400deg);
-    transform: rotate(400deg)
+    transform: rotate(400deg);
   }
 
   to {
     -webkit-transform: rotate(1turn);
-    transform: rotate(1turn)
+    transform: rotate(1turn);
   }
 }
 
@@ -228,11 +229,10 @@ a, button, select {
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
   padding: 10px;
-  @media(min-width:768px){
+  @media (min-width: 768px) {
     padding: 10px 15px;
   }
 }
-
 
 .search-input {
   font-weight: 400;
@@ -244,8 +244,6 @@ a, button, select {
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
   background-color: rgba(163, 176, 187, 0.37);
-
-
 }
 
 .voice-search {
@@ -260,21 +258,20 @@ a, button, select {
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
-&.active{
-  filter: drop-shadow(0px 0px 3px $colorWhite);
-&::before {
-  content: '';
-  display: block;
-  height: 48px;
-  width: 48px;
-  border-radius: 50%;
-  margin-top: -13px;
-  margin-left: -18px;
-  border-top: 1px solid $colorWhite;
-  animation: animate 1s linear infinite;
-}
-}
-
+  &.active {
+    filter: drop-shadow(0px 0px 3px $colorWhite);
+    &::before {
+      content: '';
+      display: block;
+      height: 48px;
+      width: 48px;
+      border-radius: 50%;
+      margin-top: -13px;
+      margin-left: -18px;
+      border-top: 1px solid $colorWhite;
+      animation: animate 1s linear infinite;
+    }
+  }
 }
 
 .search-error-block {
@@ -297,16 +294,15 @@ a, button, select {
     transform: scale(2);
     opacity: 0;
   }
-  100% {}
+  100% {
+  }
 }
 /*----MAP----*/
 .map-section {
-
   @media (max-width: 1239px) {
-  width: 100%;
+    width: 100%;
     margin-top: 30px;
   }
-
 }
 
 #map {
@@ -316,7 +312,6 @@ a, button, select {
   @media (max-width: 1239px) {
     width: 100%;
   }
-
 }
 
 .coordinates {
@@ -327,14 +322,10 @@ a, button, select {
 /*----------MAIN BLOCK----------*/
 .about-weather {
   width: 50%;
-  @media(max-width: 1239px) {
+  @media (max-width: 1239px) {
     width: 100%;
-
   }
 }
-
-
-
 
 .content-block {
   display: flex;
@@ -347,14 +338,14 @@ a, button, select {
     align-items: baseline;
     margin-top: 30px;
   }
-  @media (min-width:450px) and (max-width: 1239px) {
+  @media (min-width: 450px) and (max-width: 1239px) {
     align-items: flex-end;
     justify-content: space-around;
   }
 }
 .additional-information {
   @media (min-width: 768px) {
-    & img{
+    & img {
       width: 150px;
       height: 100px;
       object-fit: cover;
@@ -375,10 +366,10 @@ a, button, select {
 .weather-of-day {
   min-width: 31%;
   background-color: rgba(243, 243, 243, 0.17);
-  border: 1px solid rgba(255, 255, 255, .2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 15px;
   border-radius: 5px;
-  p{
+  p {
     font-size: 0.8em;
   }
   @media (min-width: 768px) {
@@ -386,7 +377,7 @@ a, button, select {
     flex-wrap: wrap;
     justify-content: center;
     width: 31px;
-    & .title{
+    & .title {
       font-size: 0.8em;
       text-align: center;
     }
@@ -400,7 +391,7 @@ a, button, select {
 /*----------POPUP----------*/
 .popup-container {
   display: none;
-  background-color:rgba(20, 20, 25, 0.8);;
+  background-color: rgba(20, 20, 25, 0.8);
   position: fixed;
   left: 0;
   top: 0;
@@ -444,5 +435,4 @@ a, button, select {
   color: black;
   background-color: $colorWhite;
   transform: translate(-50%, -50%);
-
 }

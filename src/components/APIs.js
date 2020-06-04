@@ -1,6 +1,5 @@
 import { showErrorMessage, store } from '../index';
 
-
 export const API_weather = {
   get apikey() {
     return '69608718e01c4ff1e36fa29958bb43b6';
@@ -15,10 +14,16 @@ export const API_weather = {
       const hasAllDataAlready = store.dataWeatherOfSomeDays.get(city)?.length >= amountOfForecastDays;
       if (hasAllDataAlready) return;
       const units = {
-        'celsius': 'metric',
-        'fahrenheit': 'imperial'
+        celsius: 'metric',
+        fahrenheit: 'imperial',
       };
-      const response = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${coordinates.lat}&lon=${coordinates.lng}&lang=${currentLanguage}&exclude=${'hourly,minutely'}&appid=${this.apikey}&units=${units[currentTemperatureUnits]}`);
+      const response = await fetch(
+        `https://api.openweathermap.org/data/2.5/onecall?lat=${coordinates.lat}&lon=${
+          coordinates.lng
+        }&lang=${currentLanguage}&exclude=${'hourly,minutely'}&appid=${this.apikey}&units=${
+          units[currentTemperatureUnits]
+        }`
+      );
       if (!response.ok) {
         throw Error('Something went wrong');
       }
@@ -30,32 +35,41 @@ export const API_weather = {
         weather: resultforToday.weather[0].description,
         humidity: resultforToday.humidity,
         wind: resultforToday.wind_speed,
-        icon: resultforToday.weather[0].icon
+        icon: resultforToday.weather[0].icon,
       };
       store.currentTimeAndDay = {
         get todayDate() {
-          const day = (new Date().toLocaleString('en-US', {
-            timeZone: result.timezone,
-            weekday: 'long'
-          })).toLocaleLowerCase();
+          const day = new Date()
+            .toLocaleString('en-US', {
+              timeZone: result.timezone,
+              weekday: 'long',
+            })
+            .toLocaleLowerCase();
           return store.translate.daysOfWeek[day];
         },
         get timeNow() {
           return new Date().toLocaleTimeString('en-US', {
             timeZone: result.timezone,
-            hour12: false
+            hour12: false,
           });
         },
         get dayOfMonth() {
-          return (new Date().toDateString('en-US', {
-            timeZone: result.timezone
-          })).toString().split(' ')[2];
+          return new Date()
+            .toDateString('en-US', {
+              timeZone: result.timezone,
+            })
+            .toString()
+            .split(' ')[2];
         },
         get month() {
-          return (new Date().toDateString('en-US', {
-            timeZone: result.timezone
-          })).toString().split(' ')[1].toLocaleLowerCase();
-        }
+          return new Date()
+            .toDateString('en-US', {
+              timeZone: result.timezone,
+            })
+            .toString()
+            .split(' ')[1]
+            .toLocaleLowerCase();
+        },
       };
 
       store.dataWeatherOfSomeDays.set(city, []);
@@ -64,12 +78,14 @@ export const API_weather = {
         const resultItem = result.daily[i];
         store.dataWeatherOfSomeDays.get(city).push({
           weather: resultItem.weather[0].description,
-          degree: Math.round(((resultItem.temp.min + resultItem.temp.max) / 2)),
-          dayOfWeek: new Date(resultItem.dt * 1000).toLocaleString('en-US', {
-            timeZone: result.timezone,
-            weekday: 'long'
-          }).toLocaleLowerCase(),
-          icon: resultItem.weather[0].icon
+          degree: Math.round((resultItem.temp.min + resultItem.temp.max) / 2),
+          dayOfWeek: new Date(resultItem.dt * 1000)
+            .toLocaleString('en-US', {
+              timeZone: result.timezone,
+              weekday: 'long',
+            })
+            .toLocaleLowerCase(),
+          icon: resultItem.weather[0].icon,
         });
       }
     } catch (error) {
@@ -81,8 +97,7 @@ export const API_weather = {
         showErrorMessage(error);
       }
     }
-  }
-
+  },
 };
 
 export const API_geolocation = {
@@ -102,8 +117,8 @@ export const API_geolocation = {
         ...result,
         coordinates: {
           lat: Number(locationCoordinatesArray[0]),
-          lng: Number(locationCoordinatesArray[1])
-        }
+          lng: Number(locationCoordinatesArray[1]),
+        },
       };
     } catch (error) {
       showErrorMessage(error);
@@ -113,7 +128,9 @@ export const API_geolocation = {
     const token = '3c0960e747d4430daf05b9de5716302a';
     const language = store.currentLanguage;
     try {
-      const response = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${city}&key=${token}&language=${language}&pretty=1&no_annotations=1&limit=1&min_confidence=1&no_dedupe=1`);
+      const response = await fetch(
+        `https://api.opencagedata.com/geocode/v1/json?q=${city}&key=${token}&language=${language}&pretty=1&no_annotations=1&limit=1&min_confidence=1&no_dedupe=1`
+      );
       // https://api.opencagedata.com/geocode/v1/json?q=moscw&key=dfcea8096a95496ba653f501109c66bf&pretty=1&no_annotations=1&language=ru
       if (!response.ok) {
         throw Error('Something went wrong');
@@ -128,7 +145,7 @@ export const API_geolocation = {
       return {
         city: bestMatch.components[bestMatch.components._type] ?? bestMatch.components.town,
         country: bestMatch.components.country,
-        coordinates: bestMatch.geometry
+        coordinates: bestMatch.geometry,
       };
     } catch (error) {
       if (!('errorField' in error)) {
@@ -136,7 +153,7 @@ export const API_geolocation = {
       }
       throw error;
     }
-  }
+  },
 };
 
 export const API_images = {
@@ -145,7 +162,9 @@ export const API_images = {
   },
   async getImageUrl() {
     try {
-      const response = await fetch(`https://api.unsplash.com/photos/random?orientation=landscape&per_page=1&query=nature&client_id=${this.apikey}`);
+      const response = await fetch(
+        `https://api.unsplash.com/photos/random?orientation=landscape&per_page=1&query=nature&client_id=${this.apikey}`
+      );
       if (!response.ok) {
         throw Error('Something went wrong');
       }
@@ -154,7 +173,7 @@ export const API_images = {
     } catch (error) {
       showErrorMessage(error);
     }
-  }
+  },
 };
 
 export const LS_API = {
@@ -165,10 +184,10 @@ export const LS_API = {
   set data({ fieldName, value }) {
     const newLSValue = {
       ...this.data,
-      [fieldName]: value
+      [fieldName]: value,
     };
     return localStorage.setItem(this.fieldName, JSON.stringify(newLSValue));
-  }
+  },
 };
 export const API_speechRecogniniton = {
   async recognizeSpeech() {
@@ -181,19 +200,19 @@ export const API_speechRecogniniton = {
         if ('webkitSpeechRecognition' in window) {
           const recognition = new webkitSpeechRecognition();
           recognition.lang = currentLanguage;
-          recognition.onresult = await function(event) {
+          recognition.onresult = await function (event) {
             const result = event.results[event.resultIndex];
             resolve(result[0].transcript);
           };
 
           recognition.start();
         } else {
-          throw Error('webkitSpeechRecognition is not supported')
+          throw Error('webkitSpeechRecognition is not supported');
         }
       } catch (error) {
         showErrorMessage(error);
         reject(error);
       }
     });
-  }
+  },
 };
