@@ -29,9 +29,7 @@ export function googleMapInit() {
       zoom: 10
     });
 
-    console.log(map);
-
-    const marker = new google.maps.Marker({
+      const marker = new google.maps.Marker({
       position: {
         lat,
         lng

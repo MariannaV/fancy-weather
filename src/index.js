@@ -5,7 +5,7 @@ import {
   API_weather,
   API_geolocation,
   API_images,
-  LS_API
+  LS_API, API_speechRecogniniton
 } from './components/APIs';
 import {
   createWeatherTodayBlock,
@@ -26,11 +26,6 @@ async function render() {
 
 async function renderWithLanguage() {
   store.currentLocation = await API_geolocation.getLocationByCity({ city: store.currentLocation.city });
-  // addCoordinates();
-  // API_weather.getWeather()
-  // createWeatherTodayBlock()
-  // createWeatherOfSomeDays()
-  // googleMapAPI.toggleChange()
 }
 
 async function renderWithTemperature() {
@@ -41,15 +36,15 @@ async function renderWithTemperature() {
 
 window.onload = async () => {
   document.querySelector('[name=currentLanguage]').value = store.currentLanguage;
-  // changeBackgroundImage().then(changeBackgroundImage);
+  createDegreesButtons();
+  changeBackgroundImage().then(changeBackgroundImage);
   createSearchForm();
   listenSearchForm();
+
   selectHandler();
   backgroundImageToggleButtonHandler();
   const { city } = await API_geolocation.getCurrentLocation();
   store.currentLocation = await API_geolocation.getLocationByCity({ city });
-  degreesToggleHandler();
-  // createErrorMessageBlock()
 };
 
 export const store = new Proxy({
@@ -92,32 +87,6 @@ export const store = new Proxy({
   }
 });
 
-// const googleMapAPI = {
-// get map() {
-// if (nonExist) then init
-//  return map
-// },
-// toggleLocation(params) {
-// this.map.toggle(params)
-//   }
-// };
-
-  function googleMapInit() {
-    const { lat, lng } = coordinates;
-    //need call this map
-    const map = new google.maps.Map(document.getElementById('map'), {
-      center: {
-        lat,
-        lng
-      },
-      zoom: 10
-    });
-
-const units = {
-  'celsius': 'metric',
-  'fahrenheit': 'imperial'
-};
-
 
 function createErrorMessageBlock({ errorField }) {
   const { translate } = store;
@@ -131,7 +100,6 @@ function createErrorMessageBlock({ errorField }) {
     );
   }
   if (errorField) errorBlock.dataset.testId = errorField;
-  console.log(errorBlock, errorField);
   errorBlock.innerHTML = '';
   errorBlock.insertAdjacentHTML('beforeend',
     `<p>${translate.searchFormData.errors[errorField]}</p>`
@@ -174,8 +142,6 @@ function backgroundImageToggleButtonHandler() {
 }
 
 
-
-
 function selectHandler() {
   const select = document.querySelector('select.toggle-block');
   select.addEventListener('change', event => {
@@ -197,8 +163,8 @@ function createSearchForm() {
   searchForm.insertAdjacentHTML('beforeend',
     `
   <div class="search-wrapper">
-    <input class="search-input" name="place" placeholder="${translate.searchFormData.searchInputPlaceholder}" autocomplete="off" autofocus="">
-    <button type="button" class="voice-search">X</button>
+    <input class="search-input" name="place" placeholder="${translate.searchFormData.searchInputPlaceholder}" autocomplete="off" autofocus="" required>
+    <button type="button" class="voice-search"></button>
   </div>
   <button class="search-button" type="submit">${translate.searchFormData.buttonText}</button>
   <div class="search-error-block" ${errorId ? `data-test-id=${errorId}` : ''}>${errorId ? translate.searchFormData.errors[errorId] : ''}</div>
@@ -211,7 +177,7 @@ function createSearchForm() {
   async function recognizeSpeechHandler() {
     searchForm.querySelector('.voice-search').classList.add('active');
     searchForm.querySelector('[name=place]').value = await API_speechRecogniniton.recognizeSpeech();
-    searchForm.requestSubmit()
+    searchForm.requestSubmit();
   }
 }
 
@@ -229,15 +195,25 @@ function listenSearchForm() {
   });
 };
 
-function degreesToggleHandler() {
-  const toggleTemperatureBlock = document.querySelector('.toggle-temperature');
-  toggleTemperatureBlock.addEventListener('click', event => {
-    store.currentTemperatureUnits = event.target.dataset.degree;
-    // toggleTemperatureBlock.classList.contains('celsius')
-    toggleTemperatureBlock.classList.remove('celsius', 'fahrenheit');
-    toggleTemperatureBlock.classList.add(event.target.dataset.degree);
-    console.log(event.target, event.currentTarget, store.currentTemperatureUnits);
-  });
+
+function createDegreesButtons() {
+  const { currentTemperatureUnits } = store;
+  const wrapper = document.querySelector('.toggle-temperature');
+  const fieldName = 'temperature'
+  wrapper.insertAdjacentHTML('beforeend',
+    `
+    <input type='radio' name=${fieldName} id='fahrenheit' data-degree='fahrenheit' ${currentTemperatureUnits === 'fahrenheit' ? 'checked' : ''}  />
+    <label class='toggle-temperature-button' for='fahrenheit'>°F</label>
+    <input type='radio' name=${fieldName} id='celsius' data-degree='celsius' ${currentTemperatureUnits === 'celsius' ? 'checked' : ''} />
+    <label class='toggle-temperature-button' for='celsius'>°C</label>
+   `);
+
+  wrapper.querySelectorAll(`input[name=${fieldName}]`).forEach(input => {
+    input.addEventListener('change', (event) => {
+      store.currentTemperatureUnits = event.target.dataset.degree;
+    })
+  })
+
 }
 
 export function showErrorMessage(message) {
@@ -265,34 +241,7 @@ export function showErrorMessage(message) {
   }
 }
 
-const API_speechRecogniniton = {
-  async recognizeSpeech() {
-    return new Promise(async (resolve, reject) => {
-      const { currentLanguage } = store;
 
-      try {
-        await getMedia({ audio: true });
-
-        if ('webkitSpeechRecognition' in window) {
-          const recognition = new webkitSpeechRecognition();
-          recognition.lang = currentLanguage;
-          recognition.onresult = await function(event) {
-            const result = event.results[event.resultIndex];
-            resolve(result[0].transcript);
-          };
-
-          recognition.start();
-        } else {
-          const error = 'webkitSpeechRecognition is not supported';
-          showErrorMessage(error);
-          reject(error);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    });
-  }
-};
 
 async function getMedia(constraints) {
   let stream = null;
