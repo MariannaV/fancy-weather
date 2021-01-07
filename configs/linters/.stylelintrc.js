@@ -14,7 +14,7 @@ module.exports = {
     'stylelint-declaration-block-no-ignored-properties',
     'stylelint-high-performance-animation',
     'stylelint-no-unsupported-browser-features',
-    'stylelint-declaration-use-variable'
+    'stylelint-declaration-use-variable',
   ],
   rules: {
     'plugin/declaration-block-no-ignored-properties': true,

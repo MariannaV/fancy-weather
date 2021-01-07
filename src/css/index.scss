@@ -34,8 +34,8 @@ select {
 
   &::before {
     background-image: linear-gradient(rgba(8, 15, 26, 0.59) 0%, rgba(17, 17, 46, 0.46) 100%),
-    var(--prevImg, linear-gradient(rgba(8, 15, 26, 0.59) 0%, rgba(17, 17, 46, 0.46) 100%)),
-    var(--currentImg, url(../img/background-image.jpeg));
+      var(--prevImg, linear-gradient(rgba(8, 15, 26, 0.59) 0%, rgba(17, 17, 46, 0.46) 100%)),
+      var(--currentImg, url(../img/background-image.jpeg));
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;

@@ -7,7 +7,7 @@ const root = path.resolve(__dirname, './'),
   distPath = `${root}/dist`,
   mode = process.env.NODE_ENV,
   isDev = mode === 'development',
-  isProd = mode === 'production'
+  isProd = mode === 'production';
 
 module.exports = {
   mode: 'development',
@@ -60,7 +60,7 @@ module.exports = {
               config: { path: `${root}/configs/stylization/postcss.config.js` },
               sourceMap: isDev && 'inline',
             },
-          }
+          },
         ],
       },
       {
