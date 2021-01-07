@@ -30,7 +30,7 @@ module.exports = {
     'import/no-extraneous-dependencies': 0, //because of Yarn Workspaces
     'import/prefer-default-export': 0,
     'import/no-cycle': 0,
-    'import/newline-after-import': 0
+    'import/newline-after-import': 0,
   },
   settings: {
     'import/resolver': {
