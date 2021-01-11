@@ -1,0 +1,35 @@
+include ../components/head/head.pug
+
+
+doctype html
+html(lang="ru")
+    +head({ "title": "Fancy weather", "description": "Прогноз погоды" })
+
+    body.page-home
+        main.weather-content
+            header.header
+                .control-block
+                    button.toggle-block.toggle-background-image
+                    select(name='currentLanguage').toggle-block.toggle-language
+                        option(value="en" selected) en
+                        option(value="ru") ru
+                        option(value="be") be
+                    .toggle-block.toggle-temperature.celsius
+                form(id="searchForm").search-form
+                    .search-wrapper
+            section.about-weather
+                article.main-block
+                    .header-block
+                        .title.location
+                        .date
+                    .content-block.weather-today-block
+                        .degree-value
+                        .additional-information
+                article.bottom-block.forecast-of-some-days
+            section.map-section
+                #map
+                .coordinates
+        .popup-container.errors-block
+            .popup-block
+                .close-popup
+                .popup-text

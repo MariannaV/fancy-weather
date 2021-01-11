@@ -1,0 +1,61 @@
+@import 'helpers/postcss-reset/mobile.css';
+@import '../components/variables.scss';
+@import '../components/forms/search-form.scss';
+@import '../components/main/main.scss';
+@import '../components/main/popup.scss';
+@import '../components/main/map.scss';
+
+/*----------BASIC----------*/
+button,
+select,
+input {
+  background: initial;
+  border: initial;
+  outline: none;
+}
+
+a,
+button,
+select {
+  cursor: pointer;
+}
+
+.page-home {
+  background-color: $colorBlack;
+  color: $colorWhite;
+  font-size: 30px;
+  padding: 60px;
+  @media (max-width: $min-mobile) {
+    padding: 20px;
+  }
+  @media (min-width: $mobile) and (max-width: $min-tablet) {
+    padding: 40px;
+  }
+
+  &::before {
+    background-image: linear-gradient(rgba(8, 15, 26, 0.59) 0%, rgba(17, 17, 46, 0.46) 100%),
+      var(--prevImg, linear-gradient(rgba(8, 15, 26, 0.59) 0%, rgba(17, 17, 46, 0.46) 100%)),
+      var(--currentImg, url(../img/background-image.jpeg));
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    content: '';
+    display: block;
+    height: 100vh;
+    left: 0;
+    position: fixed;
+    top: 0;
+    width: 100vw;
+    z-index: -1;
+  }
+}
+
+.weather-content {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  @media (max-width: $min-tablet) {
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "project-stylization",
+  "description": "Stylization Configuration",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {},
+  "devDependencies": {
+    "postcss-advanced-variables": "3.0.1",
+    "postcss-assets": "5.0.0",
+    "postcss-color-function": "4.1.0",
+    "postcss-css-reset": "1.0.2",
+    "postcss-line-height-px-to-unitless": "0.2.1",
+    "postcss-nested": "4.2.1",
+    "postcss-preset-env": "6.7.0",
+    "postcss-property-lookup": "2.0.0",
+    "postcss-pxtorem": "5.1.1",
+    "postcss-scale": "1.0.1",
+    "postcss-selector-matches": "4.0.0",
+    "postcss-selector-not": "4.0.0",
+    "postcss-svg": "3.0.0",
+    "css-mqpacker": "7.0.0"
+  }
+}

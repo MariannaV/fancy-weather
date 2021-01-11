@@ -1,0 +1,220 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 60px;
+  width: 100%;
+  @media (max-width: $min-tablet) {
+    align-items: center;
+    flex-direction: column;
+  }
+}
+
+.header-block {
+  .title.location {
+    font-size: 40px;
+    font-weight: 700;
+  }
+
+  .date {
+    display: flex;
+
+    @media (max-width: $min-mobile) {
+      flex-direction: column;
+    }
+    @media (min-width: $mobile) {
+      & > * + * {
+        margin-left: 9px;
+      }
+    }
+  }
+}
+
+/*---------- CONTROL BLOCK ----------*/
+
+.control-block {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  max-width: 100%;
+  width: 300px;
+  @media (max-width: $min-mobile) {
+    width: 100%;
+  }
+}
+
+.toggle-block {
+  background-color: rgba(180, 184, 187, 0.7);
+  border-radius: 5px;
+  font-size: 24px;
+  height: 55px;
+  padding: 5px;
+  width: 55px;
+}
+
+.toggle-background-image,
+.toggle-language {
+  &:hover {
+    background-color: rgba(180, 184, 187, 0.9);
+  }
+}
+
+.toggle-temperature {
+  align-items: center;
+  background-color: initial;
+  display: flex;
+  justify-content: center;
+  padding: 0;
+  width: 110px;
+
+  .toggle-temperature-button {
+    align-items: center;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    width: 100%;
+  }
+
+  input {
+    display: none;
+
+    &:not(:checked) + label {
+      background-color: rgba(243, 243, 243, 0.2);
+
+      &:hover {
+        background-color: rgba(180, 184, 187, 0.9);
+      }
+    }
+
+    &:checked + label {
+      background-color: rgba(180, 184, 187, 0.7);
+      pointer-events: none;
+    }
+  }
+
+  label {
+    cursor: pointer;
+    transition: background-color 0.3s;
+
+    &:first-of-type {
+      border-bottom-left-radius: 5px;
+      border-top-left-radius: 5px;
+    }
+
+    &:last-of-type {
+      border-bottom-right-radius: 5px;
+      border-top-right-radius: 5px;
+    }
+  }
+}
+
+.toggle-background-image {
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNTEyIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiIgd2lkdGg9IjUxMiIgY2xhc3M9IiI+PGc+PHBhdGggZD0ibTYxLjQ5NjA5NCAyNzkuNjA5Mzc1Yy0uOTg4MjgyLTguMjM0Mzc1LTEuNDk2MDk0LTE2LjQxNDA2My0xLjQ5NjA5NC0yMy42MDkzNzUgMC0xMDcuNDAyMzQ0IDg4LjU5NzY1Ni0xOTYgMTk2LTE5NiA1MC4wOTc2NTYgMCA5NyAyMC4xOTkyMTkgMTMxLjUgNTEuNjk5MjE5bC0xNy4zMDA3ODEgMTcuNjAxNTYyYy0zLjg5ODQzOCAzLjg5ODQzOC01LjM5ODQzOCA5LjU5NzY1Ny0zLjg5ODQzOCAxNSAxLjgwMDc4MSA1LjA5NzY1NyA2IDkgMTEuMzk4NDM4IDEwLjE5OTIxOSAzLjAxOTUzMS42MDU0NjkgMTAyLjIxNDg0MyAzMi41NzAzMTIgOTUuODk4NDM3IDMxLjMwMDc4MSA4LjAzNTE1NiAyLjY3NTc4MSAxOS45MTc5NjktNS44OTQ1MzEgMTcuNzAzMTI1LTE3LjY5OTIxOS0uNjA5Mzc1LTMuMDIzNDM3LTIyLjU3MDMxMi0xMTMuMjE0ODQzLTIxLjMwMDc4MS0xMDYuOTAyMzQzLTEuMTk5MjE5LTUuMzk4NDM4LTUuMTAxNTYyLTkuODk4NDM4LTEwLjUtMTEuMzk4NDM4LTUuMDk3NjU2LTEuNS0xMC44MDA3ODEgMC0xNC42OTkyMTkgMy44OTg0MzhsLTE0LjY5OTIxOSAxNC4zOTg0MzdjLTQ1LjMwMDc4MS00Mi4yOTY4NzUtMTA3LjUwMzkwNi02OC4wOTc2NTYtMTc0LjEwMTU2Mi02OC4wOTc2NTYtMTQwLjY5OTIxOSAwLTI1NiAxMTUuMzAwNzgxLTI1NiAyNTZ2LjU5NzY1NmMwIDguNDU3MDMyLjM4NjcxOSAxNC45OTIxODguODM1OTM4IDE5Ljk5MjE4OC41OTc2NTYgNi42MjUgNS40ODA0NjggMTIuMDUwNzgxIDEyLjAwMzkwNiAxMy4zNTkzNzVsMzAuODE2NDA2IDYuMTYwMTU2YzEwLjAzMTI1IDIuMDA3ODEzIDE5LjA1MDc4MS02LjQwMjM0NCAxNy44Mzk4NDQtMTYuNXptMCAwIiBkYXRhLW9yaWdpbmFsPSIjMDAwMDAwIiBjbGFzcz0iYWN0aXZlLXBhdGgiIGRhdGEtb2xkX2NvbG9yPSIjMDAwMDAwIiBzdHlsZT0iZmlsbDojRkZGRkZGIj48L3BhdGg+PHBhdGggZD0ibTQ5OS4yNSAyMjIuMDI3MzQ0LTMwLjkwNjI1LTYuMjk2ODc1Yy0xMC4wNDI5NjktMi4wNDY4NzUtMTkuMTI1IDYuMzcxMDkzLTE3Ljg5MDYyNSAxNi41MTU2MjUgMS4wNzAzMTMgOC43NTM5MDYgMS41NDY4NzUgMTcuMjY1NjI1IDEuNTQ2ODc1IDIzLjc1MzkwNiAwIDEwNy4zOTg0MzgtODguNTk3NjU2IDE5Ni0xOTYgMTk2LTUwLjA5NzY1NiAwLTk3LTIwLjE5OTIxOS0xMzEuNS01MmwxNy4zMDA3ODEtMTcuMzAwNzgxYzMuODk4NDM4LTMuODk4NDM4IDUuMzk4NDM4LTkuNTk3NjU3IDMuODk4NDM4LTE1LTEuODAwNzgxLTUuMTAxNTYzLTYtOS0xMS4zOTg0MzgtMTAuMTk5MjE5LTMuMDE5NTMxLS42MDkzNzUtMTAyLjIxNDg0My0zMi41NzAzMTItOTUuODk4NDM3LTMxLjMwMDc4MS01LjEwMTU2My0uODk4NDM4LTEwLjIwMzEyNS42MDE1NjItMTMuNSA0LjE5OTIxOS0zLjYwMTU2MyAzLjMwMDc4MS01LjEwMTU2MyA4LjY5OTIxOC00LjIwMzEyNSAxMy41LjYwOTM3NSAzLjAxOTUzMSAyMi41NzQyMTkgMTEyLjIxMDkzNyAyMS4zMDQ2ODcgMTA1Ljg5ODQzNyAxLjE5NTMxMyA1LjQwMjM0NCA1LjA5NzY1NiA5LjkwMjM0NCAxMC40OTYwOTQgMTEuMzk4NDM3IDYuMjYxNzE5IDEuNTcwMzEzIDExLjQ4ODI4MS0uMzI4MTI0IDE0LjY5OTIxOS0zLjg5ODQzN2wxNC40MDIzNDMtMTQuMzk4NDM3YzQ1LjI5Njg3NiA0Mi4zMDA3ODEgMTA3LjUgNjkuMTAxNTYyIDE3NC4zOTg0MzggNjkuMTAxNTYyIDE0MC42OTkyMTkgMCAyNTYtMTE1LjMwMDc4MSAyNTYtMjU2di0uOTAyMzQ0YzAtNi42NDg0MzctLjI0MjE4OC0xMy4xNzU3ODEtLjc5Njg3NS0xOS42NjQwNjItLjU3MDMxMy02LjYyODkwNi01LjQzMzU5NC0xMi4wNzQyMTktMTEuOTUzMTI1LTEzLjQwNjI1em0wIDAiIGRhdGEtb3JpZ2luYWw9IiMwMDAwMDAiIGNsYXNzPSJhY3RpdmUtcGF0aCIgZGF0YS1vbGRfY29sb3I9IiMwMDAwMDAiIHN0eWxlPSJmaWxsOiNGRkZGRkYiPjwvcGF0aD48L2c+IDwvc3ZnPg==);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 30px;
+}
+
+.with-animation {
+  animation: spin 1.4s ease-in-out infinite;
+}
+
+@keyframes spin {
+  0% {
+    -webkit-transform: rotate(0);
+    transform: rotate(0);
+  }
+
+  80% {
+    -webkit-transform: rotate(400deg);
+    transform: rotate(400deg);
+  }
+
+  to {
+    -webkit-transform: rotate(1turn);
+    transform: rotate(1turn);
+  }
+}
+
+.degree-value {
+  font-size: 10em;
+  font-weight: 600;
+  @media (max-width: $min-mobile) {
+    font-size: 3em;
+  }
+  @media (min-width: $mobile) and (max-width: $min-tablet) {
+    font-size: 6em;
+  }
+}
+
+/*----------MAIN BLOCK----------*/
+.about-weather {
+  width: 50%;
+  @media (max-width: $min-desktop) {
+    width: 100%;
+  }
+}
+
+.content-block {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+  width: 100%;
+  @media (max-width: $min-mobile) {
+    align-items: baseline;
+    flex-direction: column;
+    margin-top: 30px;
+  }
+  @media (min-width: $mobile) and (max-width: $min-desktop) {
+    align-items: flex-end;
+    justify-content: space-around;
+  }
+}
+
+.additional-information {
+  @media (min-width: $tablet) {
+    img {
+      height: 100px;
+      object-fit: cover;
+      width: 150px;
+    }
+  }
+}
+
+.bottom-block {
+  display: flex;
+  justify-content: space-between;
+  @media (max-width: $min-tablet) {
+    flex-direction: column;
+    & > * + * {
+      margin-top: 15px;
+    }
+  }
+}
+
+.weather-of-day {
+  background-color: rgba(243, 243, 243, 0.17);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+  min-width: 31%;
+  padding: 15px;
+  @media (min-width: $tablet) {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 31px;
+    & .title {
+      font-size: 0.8em;
+      text-align: center;
+    }
+    & p {
+      font-size: 3em;
+      text-align: center;
+      width: 100%;
+    }
+  }
+
+  p {
+    font-size: 0.8em;
+  }
+}
